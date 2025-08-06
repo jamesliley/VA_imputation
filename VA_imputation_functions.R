@@ -12,5 +12,13 @@
 
 ## Functions to be added to this document once working and commented.
 
+##' @name logistic
+##' @description calculates the logistic function 
+##' @param x input
+##' @return 1/(1+exp(-x))
+##' @export
+logistic=function(x) {
+  return(1/(1+exp(-x)))
+}
 
 
