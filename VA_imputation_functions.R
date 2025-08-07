@@ -123,3 +123,67 @@ recoverAnswers=function(VA,block,method="OpenVA",data.type = "WHO2012",
 
 
 
+
+
+
+##' Remove and impute (e.g. 'recover') a block of answers for InSilicoVA models
+##' @name recoverAnswers2
+##' @description Takes a dataset of verbal autopsies, a probbase and a set of questions.
+##' Sets the answers to those questions to 'missing', and attempts to impute
+##' their values.
+##' @param VA VA dataset, in the format of (e.g.) RandomVA1
+##' @param block Set of indices for questions, corresponding to rows in VA
+##' @param method Method for attaining cause-of-death distribution from VA answers; default 'OpenVA'
+##' @param data.type Format of the VA data; default 'WHO2012'
+##' @param model VA algorithm used; at the moment supports only 'InterVA'
+##' @param CondProbNum A  customised probability matrix with 245 row symptomns on 60 column causes in the same order as InterVA4 specification. For example input see condprobnum.
+##' @return A list of two data frames, one called 'Original' and one called 'Imputed'
+##' @export
+##' @examples
+##' ## Impute block of questions 11-20
+##' data(RandomVA1)
+##' out=recoverAnswers2(RandomVA1,block=11:20,method="OpenVA",
+##'                    data.type = "WHO2012",model = "InSilicoVA",
+##'                    CondProbNum=condprobnum)
+##'                   
+##' head(out$Original)
+##' head(out$Imputed)
+recoverAnswers2=function(VA,block,CondProbNum,method="OpenVA",data.type = "WHO2012",
+                        model = "InSilicoVA") {
+  library(openVA)
+  library(nbc4va)
+  new_data<- VA
+  missing<- VA[,block]
+  new_data[, block]<- ""
+  
+  #Run VA algorithm
+  output_new <- insilico(data = new_data, data.type = data.type,Nsim = 10000, auto.length = FALSE,
+                         CondProbNum = CondProbNum)
+  
+  #CSMF
+  indivprob<-output_new$indiv.prob
+  imputed<- matrix(rep(0, length(indivprob[,1]) * length(block)), 
+                     nrow = length(indivprob[,1]), ncol = length(block))
+  
+                   
+  for(k in 1:length(indivprob[,1])){
+    CSMFs_new<- as.vector(indivprob[k,])
+    #Calc P(Ai|A)
+    total<-rep(0,length(block))
+    for(j in 1:length(block)){
+      subtotal<- rep(0,length(CSMFs_new))
+      for(i in 1:length(CSMFs_new)){
+        subtotal[i]<-CSMFs_new[i]*as.numeric(CondProbNum[min(block)+j-2,i])
+        }
+      total[j]<- sum(subtotal)
+      }
+    imputed[k,]<- total
+    }
+  return(list(Original=VA[,block],Imputed=imputed))
+}
+
+
+
+
+
+
