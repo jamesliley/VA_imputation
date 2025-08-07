@@ -307,3 +307,70 @@ evaluateProbbase<- function(VA,blocks, method = "OpenVA",data.type = "WHO2012", 
 }
 
 
+
+
+
+
+
+##' Partial Derivative of Imputation Accuracy with respect to a single element of the probbase(for InSilico)
+##' @name gradientProbbase
+##' @description Takes a dataset of verbal autopsies, a set of multiple blocks of questions and a VA algorithm, a value for epsilon and a single element of the probbase.
+##' Sets the answers to those questions to 'missing', and attempts to impute their values for each block in turn.
+##' Then calculates overall accuracy of the probbase by averaging imputed values across all answers set to missing. 
+##' Repeat this for a modified probbase by changing a single element by epsilon. Partial derivative with respect to this element of the probbase is the difference between accuracy.
+##' @param VA VA dataset, in the format of (e.g.) RandomVA1
+##' @param blocks A list of blocks of questions. Each block is a set of indices for questions, corresponding to rows in VA
+##' @param CondProbNum A customised probability matrix with 245 row symptomns on 60 column causes in the same order as InterVA4 specification. For example input see condprobnum.
+##' @param epsilon The amount to adjust the element of the probbase by
+##' @param probbase_element The element of the probbase you want to find the partial derivative with respect to
+##' @param method Method for attaining cause-of-death distribution from VA answers; default 'OpenVA'
+##' @param data.type Format of the VA data; default 'WHO2012'
+##' @param model VA algorithm used; at the moment supports 'InterVA' and "InSilicoVA
+##' @param version Version of InterVA used; default '4.03'
+##' @param HIV Set as 'h','m','l' for InterVA
+##' @param Malaria Set as 'h','m','l' for InterVA
+##' @return Accuracy of probbase
+##' @export
+##' @examples
+##' ## Impute blocks of questions 18-20 and 21-24, use probbase condprobnum and change element (1,1) of probbase by 0.1
+##' data("condprobnum")
+##' data("RandomVA1")
+##' out<- gradient_probbase(RandomVA1[1:100,],block=list(18:20, 21:24),method="OpenVA",data.type = "WHO2012",
+##' model = "InSilicoVA",CondProbNum=condprobnum, probbase_element = list(1,1) , epsilon = 0.1)
+
+
+gradient_probbase<- function(VA, blocks, epsilon, method = "OpenVA", probbase_element,
+                             data.type = "WHO2012", model,CondProbNum, version = NULL, HIV = NULL, 
+                             Malaria = NULL){
+  #Calculate imputation accuracy with element of probbase set to original value.
+  #Then change element of the probbase to original + epsilon
+  #Calculate new imputation accuracy and record the change in accuracy to see sensitivity
+  #Note: only work with InSilicoVA at the moment since only model which we can have custom probbase at the moment
+  
+  #Original probbase accuracy
+  library(calibrateVA)
+  library(openVA)
+  library(nbc4va)
+  accuracy_original<- evaluateProbbase(VA=VA,
+                                  blocks=blocks,
+                                  method = method,
+                                  data.type = data.type,
+                                  model=model,
+                                  CondProbNum = CondProbNum,
+                                  version = version,
+                                  HIV = HIV,
+                                  Malaria = Malaria)
+  new_probbase<- CondProbNum
+  new_probbase[probbase_element[[1]], probbase_element[[2]]]<- new_probbase[probbase_element[[1]],probbase_element[[2]]] + epsilon
+  accuracy_new <- evaluateProbbase(VA=VA,
+                                   blocks=blocks,
+                                   method = method,
+                                   data.type = data.type,
+                                   model=model,
+                                   CondProbNum = new_probbase,
+                                   version = version,
+                                   HIV = HIV,
+                                   Malaria = Malaria)
+  gradient<- (accuracy_new - accuracy_original)/epsilon
+  return(Gradient = gradient)
+}
