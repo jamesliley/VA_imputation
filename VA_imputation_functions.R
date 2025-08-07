@@ -187,3 +187,50 @@ recoverAnswers2=function(VA,block,CondProbNum,method="OpenVA",data.type = "WHO20
 
 
 
+
+##' Remove and impute (e.g. 'recover') a block of answers for InterVA models
+##' @name recoverAnswers3
+##' @description Takes a dataset of verbal autopsies, and a set of questions.
+##' Sets the answers to those questions to 'missing', and attempts to impute
+##' their values. The probbase is fixed.
+##' @param VA VA dataset, in the format of (e.g.) RandomVA1
+##' @param block Set of indices for questions, corresponding to rows in VA
+##' @param method Method for attaining cause-of-death distribution from VA answers; default 'OpenVA'
+##' @param data.type Format of the VA data; default 'WHO2012'
+##' @param model VA algorithm used; at the moment supports only 'InterVA'
+##' @param version Version of InterVA used; default '4.03'
+##' @param HIV Set as 'h','m','l'
+##' @param Malaria Set as 'h','m','l'
+##' @return A list of two data frames, one called 'Original' and one called 'Imputed'
+##' @export
+##' @examples
+##' ## Impute block of questions 11-20
+##' data(RandomVA1)
+##' out=recoverAnswers3(RandomVA1,block=11:20,method="OpenVA",
+##'                    data.type = "WHO2012",model = "InterVA",
+##'                    version = "4.03", HIV = "h", Malaria = "h")
+##'                   
+##' head(out$Original)
+##' head(out$Imputed)
+
+recoverAnswers3=function(VA,block,method="OpenVA",data.type = "WHO2012",
+                         model = "InterVA", version = "4.03", HIV = "h", 
+                         Malaria = "h") {
+  library(openVA)
+  library(nbc4va)
+  initial_out<-recoverAnswers(VA[1,],block,method="OpenVA",data.type = "WHO2012",
+                              model = "InterVA", version = "4.03", HIV = "h", 
+                              Malaria = "h")
+  Original<- initial_out$Original
+  Imputed<- initial_out$Imputed
+  for(i in 2:length(VA[,1])){
+    out<-recoverAnswers(VA[i,],block,method="OpenVA",data.type = "WHO2012",
+                        model = "InterVA", version = "4.03", HIV = "h", 
+                        Malaria = "h")
+    Original<- rbind(Original, out$Original)
+    Imputed<- rbind(Imputed, out$Imputed)
+  }
+  return(list(Original=Original,Imputed=Imputed))
+}
+
+
