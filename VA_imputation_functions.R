@@ -234,3 +234,76 @@ recoverAnswers3=function(VA,block,method="OpenVA",data.type = "WHO2012",
 }
 
 
+
+
+
+
+
+
+
+#Evaluating a probbase
+
+#Function to take several different blocks, impute in turn, find accuracy, then average to get probbase overall
+#accuracy
+##' Evaluating a probbase for InSilico and InterVA models
+##' @name evaluateProbbase
+##' @description Takes a dataset of verbal autopsies, a set of multiple blocks of questions and a VA algorithm.
+##' Sets the answers to those questions to 'missing', and attempts to impute their values for each block in turn.
+##' Then calculates overall accuracy of the probbase by averaging imputed values across all answers set to missing. 
+##' @param VA VA dataset, in the format of (e.g.) RandomVA1
+##' @param blocks A list of blocks of questions. Each block is a set of indices for questions, corresponding to rows in VA
+##' @param method Method for attaining cause-of-death distribution from VA answers; default 'OpenVA'
+##' @param data.type Format of the VA data; default 'WHO2012'
+##' @param model VA algorithm used; at the moment supports 'InterVA' and "InSilicoVA
+##' @param CondProbNum A customised probability matrix with 245 row symptomns on 60 column causes in the same order as InterVA4 specification. For example input see condprobnum.
+##' @param version Version of InterVA used; default '4.03'
+##' @param HIV Set as 'h','m','l' for InterVA
+##' @param Malaria Set as 'h','m','l' for InterVA
+##' @return Accuracy of probbase
+##' @export
+##' @examples
+##' ## Impute blocks of questions 18-20 and 21-24 and evaluate probbase for InterVA(used fixed probbase) and InSilicoVA(using condprobnum)
+##' 
+##' data(RandomVA1)
+##' evaluateProbbase(RandomVA1[1:100,],blocks=list(18:20, 21:24),method="OpenVA",data.type = "WHO2012",
+##' model = "InterVA",version = "4.03", HIV = "h", Malaria = "h")
+##' 
+##' data("condprobnum")
+##' evaluateProbbase(RandomVA1[1:100,],blocks=list(18:20, 21:24),method="OpenVA",data.type = "WHO2012",
+##' model = "InSilicoVA",CondProbNum=condprobnum)
+
+                 
+evaluateProbbase<- function(VA,blocks, method = "OpenVA",data.type = "WHO2012", model, CondProbNum=NULL,
+                             version = NULL, HIV = NULL, Malaria = NULL){
+  #For each block in list of block, run recover answers, extract imputed values where we removed a Yes
+  #Once complete take mean of imputed values
+  library(openVA)
+  library(nbc4va)
+  count<-0
+  sum<- 0
+  for(i in 1:length(blocks)){
+    block<- blocks[[i]]
+    if(model=="InterVA"){
+      out=recoverAnswers3(VA,block,method=method,
+                          data.type = data.type,model = model,
+                          version = version, HIV = HIV, Malaria = Malaria)
+    }
+    if(model=="InSilicoVA"){
+      out=recoverAnswers2(VA,block,method=method,
+                          data.type = data.type,model = model,
+                          CondProbNum=CondProbNum)
+    }
+    for (k in 1:length(out$Original[,1])) {
+      row<- out$Original[k,]
+      for (j in 1:length(out$Original)) {
+        if(row[j]=="Y"){
+          count<- count+1
+          sum<- sum + out$Imputed[k,j]
+        }
+      }
+    }
+  }
+  return(Accuracy=sum/count)
+}
+
+
