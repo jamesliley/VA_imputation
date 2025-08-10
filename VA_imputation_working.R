@@ -14,6 +14,37 @@
 
 
 ##**********************************************************************
+#General R package creation code
+##**********************************************************************
+##
+#install.packages("devtools")
+library("devtools")
+#devtools::install_github("klutometis/roxygen")
+library(roxygen2)
+
+#Guide: https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/comment-page-1/#comments
+
+#Creating an r package
+setwd(path.expand("~"))  # Sets working directory to your home folder
+create("calibrateVA")
+
+#In calibrateVA, go in R folder, create new r file and add new function and documentation
+#as in website(or create new folder each time)
+
+#Process your documentation
+setwd("./calibrateVA")
+document()
+
+#Install
+setwd("..")
+install("calibrateVA")
+
+
+
+
+
+
+##**********************************************************************
 #First attempt at simulating VA data- 10 arbitary question and 3 arbitary causes
 ##**********************************************************************
 ##
@@ -140,6 +171,8 @@ block_text<- data.frame(Names = I(names),
                         Index = I(Index))
 
 
+
+#Testing to see if works
 
 #How to input blocks from list of blocks
 str(block_text$Index[[2]])
