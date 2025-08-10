@@ -789,3 +789,197 @@ InterVA2<-function (Input, HIV, Malaria, directory = NULL, filename = "VA_result
 
 
 
+
+
+##**********************************************************************
+#Custom InterVA- allow custom probbase
+##**********************************************************************
+##
+
+
+#Allow custom probbase for InterVA using codeVA function
+#Should work when interva2 works
+
+codeVA2<-function (data, data.type = c("WHO2012", "WHO2016", "PHMRC", 
+                              "customize")[2], data.train = NULL, causes.train = NULL, probBase=NULL,
+          causes.table = NULL, model = c("InSilicoVA", "InterVA", "Tariff", 
+                                         "NBC")[1], Nchain = 1, Nsim = 10000, version = c("4.02", 
+                                                                                          "4.03", "5")[2], HIV = "h", Malaria = "h", phmrc.type = c("adult", 
+                                                                                                                                                    "child", "neonate")[1], convert.type = c("quantile", 
+                                                                                                                                                                                             "fixed", "empirical")[1], ...) 
+{
+  version <- as.character(version)
+  if (version == "5.0") 
+    version <- "5"
+  args <- as.list(match.call())
+  if (data.type == "WHO") {
+    data.type <- "WHO2012"
+    warning("The argument data.type of 'WHO' is no longer in use. 'WHO2012' or 'WHO2016' needs to be specified. Default change to 'WHO2012' for backward compatibility.\n", 
+            immediate. = TRUE)
+    args$data.type <- "WHO2012"
+  }
+  if (data.type == "WHO2016" & model == "InterVA" & version != 
+      "5") {
+    stop("Error: WHO2016 type input does not work with InterVA 4.02 or 4.03. Consider switching to 5")
+  }
+  if (data.type == "WHO2012" & model == "InterVA" & version == 
+      "5") {
+    stop("Error: WHO2012 type input does not work with InterVA 5. Consider switching to 4.03")
+  }
+  if (data.type %in% c("WHO2012", "WHO2016") && (model == "Tariff" || 
+                                                 model == "NBC")) {
+    if (is.null(data.train) || is.null(causes.train)) {
+      stop("Error: need training data for WHO questionnaire input with Tariff or NBC method.")
+    }
+  }
+  if (data.type == "customize") {
+    if (is.null(data.train) || is.null(causes.train)) {
+      stop("Error: need training data for customized input.")
+    }
+    tmp <- data[, -1]
+    tmp <- tmp[, colnames(tmp) != causes.train]
+    tmp <- toupper(as.character(as.matrix(tmp)))
+    if (sum(!tmp %in% c("Y", "", "N", ".", "-")) != 0) {
+      stop("Error: customized train/test data need to use ``Y`` to denote ``presence'', ``'' to denote ``absence'', and ``.'' to denote ``missing''.")
+    }
+  }
+  if (data.type == "PHMRC") {
+    if (is.null(data.train)) {
+      stop("Error: need training data for PHMRC data, possible training data could be obtained at http://ghdx.healthdata.org/record/population-health-metrics-research-consortium-gold-standard-verbal-autopsy-data-2005-2011")
+    }
+    if (is.null(causes.train)) {
+      stop("Error: please specify which column is the cause-of-death in PHMRC input")
+    }
+    binary <- ConvertData.phmrc(input = data.train, input.test = data, 
+                                cause = causes.train, phmrc.type = phmrc.type, convert.type = convert.type, 
+                                ...)
+    data.train <- binary$output
+    data <- binary$output.test
+    causes.train <- colnames(data.train)[2]
+  }
+  if (model == "InSilicoVA") {
+    if (is.null(Nsim)) {
+      stop("Please specify Nsim: number of iterations to draw from InSilicoVA sampler")
+    }
+    if (is.null(args$warning.write) && !(is.null(args$write))) {
+      args$warning.write <- args$write
+    }
+    if (is.null(args$burnin)) {
+      args$burnin <- round(Nsim/2)
+    }
+    if (is.null(args$thin)) {
+      args$thin <- 10 + 10 * (Nsim >= 10000)
+    }
+    if (is.null(args$Nsim)) {
+      args$Nsim <- Nsim
+    }
+    if (data.type %in% c("WHO2012", "WHO2016")) {
+      fit <- do.call("insilico", pairlist(args)[[1]][-1])
+    }
+    else if (data.type == "PHMRC" || data.type == "customize") {
+      args$data <- as.name("data")
+      args$train <- as.name("data.train")
+      args$cause <- as.name("causes.train")
+      args$type <- convert.type
+      fit <- do.call("insilico.train", pairlist(args)[[1]][-1])
+    }
+    else {
+      stop("Error: unknown data type specified")
+    }
+  }
+  else if (model == "InterVA") {
+    if (version == "4.02") {
+      replicate = TRUE
+    }
+    else {
+      replicate = FALSE
+    }
+    if (data.type == "WHO2012") {
+      if (is.null(args$write)) {
+        args$write <- FALSE
+      }
+      #NEW SECTION
+      if(is.null(probBase)){
+      fit <- InterVA4::InterVA(Input = data, HIV = HIV, 
+                               Malaria = Malaria, replicate = replicate, ...)
+      }
+      if(!is.null(probBase)){
+      fit <- calibrateVA::InterVA2(Input = data, HIV = HIV,probBase=probBase, 
+                               Malaria = Malaria, replicate = replicate, ...)
+      }
+      #END NEW SECTION
+    }
+    else if (data.type == "WHO2016") {
+      if (is.null(args$write)) {
+        args$write <- FALSE
+      }
+      for (i in 1:dim(data)[2]) {
+        data[, i] <- as.character(data[, i])
+        data[, i][data[, i] == ""] <- "n"
+      }
+      tmp <- tolower(as.character(as.matrix(data[, -1])))
+      if (sum(tmp %in% c("y", "n", "-", ".")) < length(tmp)) {
+        stop("InterVA5 input data contains values other than 'y', 'n', '.', or '-'. Please check your input, especially for extra space characters in the cells, or standardize how missing data is coded.")
+      }
+      fit <- InterVA5::InterVA5(Input = data, HIV = HIV, 
+                                Malaria = Malaria, ...)
+    }
+    else if (data.type == "PHMRC" || data.type == "customize") {
+      fit <- interVA_train(data = data, train = data.train, 
+                           causes.train = causes.train, causes.table = causes.table, 
+                           type = convert.type, ...)
+    }
+    else {
+      stop("Error: unknown data type specified")
+    }
+  }
+  else if (model == "Tariff") {
+    if (data.type == "WHO2016") {
+      data <- ConvertData(data, yesLabel = c("y", "Y"), 
+                          noLabel = c("n", "N"), missLabel = c("-"))
+      data.train <- ConvertData(data.train, yesLabel = c("y", 
+                                                         "Y"), noLabel = c("n", "N"), missLabel = c("-"))
+    }
+    data.train[, causes.train] <- as.character(data.train[, 
+                                                          causes.train])
+    if (data.type %in% c("WHO2012", "WHO2016")) {
+      fit <- Tariff::tariff(causes.train = causes.train, 
+                            symps.train = data.train, symps.test = data, 
+                            causes.table = NULL, ...)
+    }
+    else if (data.type == "PHMRC" || data.type == "customize") {
+      fit <- Tariff::tariff(causes.train = causes.train, 
+                            symps.train = data.train, symps.test = data, 
+                            causes.table = NULL, ...)
+    }
+    else {
+      stop("Error: unknown data type specified")
+    }
+  }
+  else if (model == "NBC") {
+    if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
+      stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
+    }
+    if (data.type == "WHO2016") {
+      data <- ConvertData(data, yesLabel = c("y", "Y"), 
+                          noLabel = c("n", "N"), missLabel = c("-"))
+    }
+    data.train[, 1] <- as.character(data.train[, 1])
+    data[, 1] <- as.character(data[, 1])
+    fit <- nbc4va::ova2nbc(data.train, data, causes.train)
+    if (colnames(fit$prob)[1] != "CaseID") {
+      temp <- data.frame(CaseID = fit$test.ids)
+      fit$prob <- cbind(temp, fit$prob)
+    }
+    for (i in 1:dim(fit$prob)[1]) {
+      if (sum(fit$prob[i, -1]) > 0) {
+        fit$prob[i, -1] <- fit$prob[i, -1]/sum(fit$prob[i, 
+                                                        -1])
+      }
+    }
+  }
+  else {
+    stop("Error, unknown model specification")
+  }
+  return(fit)
+}
