@@ -792,7 +792,7 @@ InterVA2<-function (Input, HIV, Malaria, directory = NULL, filename = "VA_result
 
 
 ##**********************************************************************
-#Custom InterVA- allow custom probbase
+#Custom codeVA- allow custom probbase for interVA model within codeVA
 ##**********************************************************************
 ##
 
