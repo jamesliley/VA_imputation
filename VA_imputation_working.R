@@ -197,6 +197,200 @@ out<- gradient_probbase(RandomVA1[1:100,],block=block_text$Index[2:3],method="Op
 
 
 
+##**********************************************************************
+#Simulating VA without first 9 questions(age and sex)
+##**********************************************************************
+##
 
 
+
+#Eventually use probbase of form condprobnum- 60 causes and 245 questions
+#Simulate n VAs, each of which answer 245 questions
+
+#First try with real probbase and real subset of questions
+#Use condprobnum and subset of blocks from other file
+
+data(condprobnum)
+
+## Simulate VA example
+library(mnormt)
+
+# n: number of simulations
+# pi: disease frequency
+# pb: probbase
+#simulate_va=function(n,pi,pb,blocks,covs)
+
+n=5
+#Take 3 diseases- we choose pi
+#Fixing pi
+#pi=c(0.2,0.5,0.2,0.1)
+
+#Randomly assign pi
+random_vector <- runif(60)
+# Normalize to sum to 1
+pi <- random_vector / sum(random_vector)
+
+
+# Take probbase for 3 causes and first 10 'proper' questions(ignore first 9 for now as they are different type)- we choose
+#pb= condprobnum[10:245,]
+#Or random probbase
+pb=matrix(runif(length(pi)*236),nrow=236,ncol=length(pi))
+
+#List blocks of questions which are conditionally independent
+blocks=block_text$Index
+
+dcov=function(n,xc=0.1) diag(n) + (1-diag(n))*xc
+#Covariance matrix for each block of questions
+covs<-vector("list", length = length(blocks))
+for (k in 1:length(blocks)) {
+  covs[[k]]<- dcov(length(blocks[[k]]),0.1)
+}
+
+
+
+# Number of causes of death
+n_cod=as.numeric(length(pi))
+
+# Number of questions
+n_q=as.numeric(nrow(pb))
+
+# Number of blocks
+n_block=as.numeric(length(blocks))
+
+
+# Firstly simulate under conditional independence
+va=matrix(NA,n,n_q)
+for (i in 1:n) {
+  cause_of_death=sample(1:n_cod,1,prob=pi)
+  
+  qprobs=pb[,cause_of_death]
+  
+  answers=rep(NA,n_q)
+  
+  for (b in 1:n_block) {
+    wq=blocks[[b]] # indices of questions in block b
+    bcov=covs[[b]] # covariance matrix for latent variable
+    nb=length(wq) # number of questions in block
+    
+    latent_q=rmnorm(1,mean=rep(0,nb),varcov=bcov)
+    
+    bprobs=qprobs[wq-10]
+    thresholds=qnorm(1-bprobs)
+    
+    answers[wq-10]=latent_q>thresholds
+  }
+  va[i,]=answers
+}
+va
+
+colnames(va)<- unlist(block_text$Names[-1])
+va <- ifelse(va, "Y", "")
+
+#Now add first 9 question simulation
+
+#Need to simulate id column, age, and sex
+
+
+
+#Need to generalise for all causes, then assign col/row names, then add in first 9 questions in randomVA1 form
+
+#Then need to fix question which men/women only, then find correct covariance structure for binary question etc
+
+#Upload all code on simulation/blocks/r packages to working folder for james to check- ask help on blocks/choices in simulation
+
+
+
+
+
+
+
+
+##**********************************************************************
+#Simulating VA including age and sex
+##**********************************************************************
+##
+
+
+#Version that simulates all questions- can give silly answers for first 9-need to simulate seperately, ie cant have not male or female
+data(condprobnum)
+
+## Simulate VA example
+library(mnormt)
+
+# n: number of simulations
+# pi: disease frequency
+# pb: probbase
+#simulate_va=function(n,pi,pb,blocks,covs)
+
+n=5
+#Take 3 diseases- we choose pi
+#Fixing pi
+#pi=c(0.2,0.5,0.2,0.1)
+
+#Randomly assign pi
+random_vector <- runif(60)
+# Normalize to sum to 1
+pi <- random_vector / sum(random_vector)
+
+
+# Take probbase for 3 causes and first 10 'proper' questions(ignore first 9 for now as they are different type)- we choose
+#pb= condprobnum[1:245,]
+#Or random probbase
+pb=matrix(runif(length(pi)*245),nrow=245,ncol=length(pi))
+
+#List blocks of questions which are conditionally independent
+blocks=block_text$Index
+
+dcov=function(n,xc=0.1) diag(n) + (1-diag(n))*xc
+#Covariance matrix for each block of questions
+covs<-vector("list", length = length(blocks))
+for (k in 1:length(blocks)) {
+  covs[[k]]<- dcov(length(blocks[[k]]),0.1)
+}
+
+
+
+# Number of causes of death
+n_cod=as.numeric(length(pi))
+
+# Number of questions
+n_q=as.numeric(nrow(pb))
+
+# Number of blocks
+n_block=as.numeric(length(blocks))
+
+
+# Firstly simulate under conditional independence
+va=matrix(NA,n,n_q)
+for (i in 1:n) {
+  cause_of_death=sample(1:n_cod,1,prob=pi)
+  
+  qprobs=pb[,cause_of_death]
+  
+  answers=rep(NA,n_q)
+  
+  for (b in 1:n_block) {
+    wq=blocks[[b]] # indices of questions in block b
+    bcov=covs[[b]] # covariance matrix for latent variable
+    nb=length(wq) # number of questions in block
+    
+    latent_q=rmnorm(1,mean=rep(0,nb),varcov=bcov)
+    
+    bprobs=qprobs[wq-10]
+    thresholds=qnorm(1-bprobs)
+    
+    answers[wq-10]=latent_q>thresholds
+  }
+  va[i,]=answers
+}
+va
+
+colnames(va)<- unlist(block_text$Names)[-1]
+va <- ifelse(va, "Y", "")
+
+#Need to generalise for all causes, then assign col/row names, then add in first 9 questions in randomVA1 form
+
+#Then need to fix question which men/women only, then find correct covariance structure for binary question etc
+
+#Upload all code on simulation/blocks/r packages to working folder for james to check- ask help on blocks/choices in simulation
 
