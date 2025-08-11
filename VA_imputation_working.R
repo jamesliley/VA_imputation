@@ -823,16 +823,67 @@ InterVA2<-function (Input, HIV, Malaria, directory = NULL, filename = "VA_result
 
 
 ##**********************************************************************
-#Custom codeVA- allow custom probbase for interVA model within codeVA
+#Custom codeVA- allow custom probbase/letter probabilities for interVA model within codeVA
 ##**********************************************************************
 ##
 
 
-#Allow custom probbase for InterVA using codeVA function
-#Should work when interva2 works
+#Allow custom probbase/letter probabilities for InterVA using codeVA function-working
+
+
+##' Version of codeVA which provides InterVA4 analysis with custom probbase/letter probability options
+##' @name codeVA2
+##' @description This function implements the codeVA function but allows for customised probbase of the exact form of data(probbase) and also allows custom letter probabilities for the probbase when using InterVA.
+##' @param probBase Default null; uses data(probbase). Any custom probbase must be of exact same format as data(probbase). Only use custom probbase for InterVA model; see insilico function for custom probbase for InSilicoVA model
+##' @param letterProb A data frame with first coloumn letter and second coloumn the corresponding probabilities. Should only be specified if using InterVA model and want to change default. If left null then will use the following default: data.frame(grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),value = c(1, 0.8, 0.5, 0.2, 0.1, 0.05, 0.02, 0.02,0.01, 0.005, 0.002, 0.001, 0.0005, 0.0001, 0.00001, 0, 0))
+##' @param Input A matrix input, or data read from csv files in the same format as required by InterVA4. Sample input is included as data(SampleInput).
+##' @param HIV An indicator of the level of prevalence of HIV. The input should be one of the following: "h"(high),"l"(low), or "v"(very low).
+##' @param Malaria An indicator of the level of prevalence of Malaria. The input should be one of the following: "h"(high),"l"(low), or "v"(very low).
+##' @param directory The directory to store the output from InterVA4. It should either be an existing valid directory, or a new folder to be created. If no path is given, the current working directory will be used.
+##' @param filename The filename the user wish to save the output. No extension needed. The output is in .csv format by default.
+##' @param output "classic": The same deliminated output format as InterVA4; or "extended": deliminated output followed by full distribution of cause of death proability.
+##' @param append A logical value indicating whether or not the new output should be appended to the existing file.
+##' @param groupcode A logical value indicating whether or not the group code will be included in the output causes.
+##' @param replicates A logical value indicating whether or not the calculation should replicate original InterVA4 software (version 4.02) exactly. If replicates = F, causes with small probability are not dropped out of calculation in intermediate steps, and a possible bug in original InterVA4 implementation is fixed. If replicates=T, then the output values will be exactly as they would be from calling the InterVA4 program (version 4.02). If replicates=F, the output values will be the same as calling the InterVA4 program (version 4.03). Since version 1.7.3, setting replicates to be FALSE also includes changes to data checking rules and pre-set conditional probabilities to be the same as the official version 4.03 software. Since version 1.6, two control variables are added to control the two bugs respectively. Setting this to TRUE will overwrite both to TRUE.
+##' @param replicate.bug1 This logical indicator controls whether or not the bug in InterVA4.2 involving the symptom "skin_les" will be replicated or not. It is suggested to set to FALSE.
+##' @param replicate.bug2 This logical indicator controls whether the causes with small probability are dropped out of calculation in intermediate steps or not. It is suggested to set to FALSE.
+##' @param write A logical value indicating whether or not the output (including errors and warnings) will be saved to file.
+##' @param ... not used
+##' @return Accuracy of probbase
+##' @export
+##' @examples
+##' 
+##' data(RandomVA3)test <- RandomVA3[1:200, ]
+##' train <- RandomVA3[201:400, ]
+##' 
+##' 
+##' #Use for other models same as codeVA
+##' fit1 <- codeVA2(data = test, data.type = "customize", model = "InSilicoVA",
+##' data.train = train, causes.train = "cause",
+##' Nsim=1000, auto.length = FALSE)
+##' 
+##' 
+##' #Custom probbase/letter probabilities for InterVA
+##' data("probbase")
+##' probbase2<- probbase
+##' probbase2[,19]<-"A"
+##' fit2 <- codeVA2(data = test, data.type = "customize", model = "InterVA",
+##' data.train = train, causes.train = "cause", write=FALSE,
+##' version = "4.02", HIV = "h", Malaria = "l", probBase = probbase2, letterProb = data.frame(
+##' grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", 
+##' "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),
+##' value = c(1, 1, 0.7, 0.2, 0.9, 1, 0.02, 0.4,
+##' 0.01, 0.005, 0, 0, 0.2, 0, 0.00001, 0, 0)))
+##' 
+##' 
+##' #Default probbase and letter probabilities for InterVA
+##' fit2 <- codeVA2(data = test, data.type = "customize", model = "InterVA",
+##' data.train = train, causes.train = "cause", write=FALSE,
+##' version = "4.02", HIV = "h", Malaria = "l")
+
 
 codeVA2<-function (data, data.type = c("WHO2012", "WHO2016", "PHMRC", 
-                              "customize")[2], data.train = NULL, causes.train = NULL, probBase=NULL,
+                              "customize")[2], data.train = NULL, causes.train = NULL, probBase=NULL, letterProb=NULL,
           causes.table = NULL, model = c("InSilicoVA", "InterVA", "Tariff", 
                                          "NBC")[1], Nchain = 1, Nsim = 10000, version = c("4.02", 
                                                                                           "4.03", "5")[2], HIV = "h", Malaria = "h", phmrc.type = c("adult", 
@@ -918,26 +969,20 @@ codeVA2<-function (data, data.type = c("WHO2012", "WHO2016", "PHMRC",
       stop("Error: unknown data type specified")
     }
   }
+  #NEW SECTION
   else if (model == "InterVA") {
     if (version == "4.02") {
-      replicate = TRUE
+      replicates = TRUE
     }
     else {
-      replicate = FALSE
+      replicates = FALSE 
     }
     if (data.type == "WHO2012") {
       if (is.null(args$write)) {
         args$write <- FALSE
       }
-      #NEW SECTION
-      if(is.null(probBase)){
-      fit <- InterVA4::InterVA(Input = data, HIV = HIV, 
-                               Malaria = Malaria, replicate = replicate, ...)
-      }
-      if(!is.null(probBase)){
-      fit <- calibrateVA::InterVA2(Input = data, HIV = HIV,probBase=probBase, 
-                               Malaria = Malaria, replicate = replicate, ...)
-      }
+      fit <- calibrateVA::InterVA2(Input = data, HIV = HIV,probBase=probBase, letterProb = letterProb,
+                               Malaria = Malaria, replicates = replicates, ...)
       #END NEW SECTION
     }
     else if (data.type == "WHO2016") {
