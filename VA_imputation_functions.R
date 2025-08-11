@@ -34,6 +34,8 @@ logistic=function(x) {
 ##' their values.
 ##' @param VA VA dataset, in the format of (e.g.) RandomVA1
 ##' @param block Set of indices for questions, corresponding to rows in VA
+##' @param probBase Default null; uses data(probbase). Any custom probbase must be of exact same format as data(probbase). Only use custom probbase for InterVA model; see insilico function for custom probbase for InSilicoVA model
+##' @param letterProb A data frame with first coloumn letter and second coloumn the corresponding probabilities. Should only be specified if using InterVA model and want to change default. If left null then will use the following default: data.frame(grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),value = c(1, 0.8, 0.5, 0.2, 0.1, 0.05, 0.02, 0.02,0.01, 0.005, 0.002, 0.001, 0.0005, 0.0001, 0.00001, 0, 0))
 ##' @param method Method for attaining cause-of-death distribution from VA answers; default 'OpenVA'
 ##' @param data.type Format of the VA data; default 'WHO2012'
 ##' @param model VA algorithm used; at the moment supports only 'InterVA'
@@ -51,38 +53,69 @@ logistic=function(x) {
 ##'                   
 ##' head(out$Original)
 ##' head(out$Imputed)
+##' 
+##' 
+##' ## Impute block of questions 11-20 with custom probbase and letter probabilities
+##' data("probbase")
+##' probbase2<- probbase
+##' probbase2[,19]<-"A"
+##' out=recoverAnswers(RandomVA1,block=11:20,method="OpenVA",
+##' data.type = "WHO2012",model = "InterVA",
+##' version = "4.03", HIV = "h", Malaria = "h",probBase = probbase2, letterProb = data.frame(
+##' grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", 
+##' "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),
+##' value = c(1, 1, 0.7, 0.2, 0.9, 1, 0.02, 0.4,
+##' 0.01, 0.005, 0, 0, 0.2, 0, 0.00001, 0, 0)))
+##' head(out$Original)
+##' head(out$Imputed)
+
+
 recoverAnswers=function(VA,block,method="OpenVA",data.type = "WHO2012",
-                        model = "InterVA", version = "4.03", HIV = "h", 
-                        Malaria = "h") {
+           model = "InterVA", version = "4.03", HIV = "h", 
+           Malaria = "h", probBase=NULL, letterProb=NULL) {
   library(openVA)
   library(nbc4va)
   new_data<- VA
   missing<- VA[,block]
   new_data[, block]<- ""
   
-  #This is probbase for InterVA4.03, need to convert into matrix of probs
-  data(probbase, package = "InterVA4")
+  #NEW SECTION
+  if(is.null(probBase)){
+    data("probbase", envir = environment())
+  }
+  if(!is.null(probBase)){
+    probbase<- probBase
+  }
+  if(is.null(letterProb)){
+    letterProbs <- data.frame(Letter = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", 
+                                         "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),
+                              Prob = c(1, 0.8, 0.5, 0.2, 0.1, 0.05, 0.02, 0.02,
+                                       0.01, 0.005, 0.002, 0.001, 0.0005, 0.0001, 0.00001, 0, 0))
+  }
+  if(!is.null(letterProb)){
+    letterProbs <- letterProb
+  }
   
-  #from inside interVA function
-  
-  probbase[probbase == "I"] <- 1
-  probbase[probbase == "A+"] <- 0.8
-  probbase[probbase == "A"] <- 0.5
-  probbase[probbase == "A-"] <- 0.2
-  probbase[probbase == "B+"] <- 0.1
-  probbase[probbase == "B"] <- 0.05
-  probbase[probbase == "B-"] <- 0.02
-  probbase[probbase == "B -"] <- 0.02
-  probbase[probbase == "C+"] <- 0.01
-  probbase[probbase == "C"] <- 0.005
-  probbase[probbase == "C-"] <- 0.002
-  probbase[probbase == "D+"] <- 0.001
-  probbase[probbase == "D"] <- 5e-04
-  probbase[probbase == "D-"] <- 1e-04
-  probbase[probbase == "E"] <- 1e-05
-  probbase[probbase == "N"] <- 0
-  probbase[probbase == ""] <- 0
+  #Letter probability conversion
+  probbase[probbase == "I"] <- letterProbs[1,2]
+  probbase[probbase == "A+"] <- letterProbs[2,2]
+  probbase[probbase == "A"] <- letterProbs[3,2]
+  probbase[probbase == "A-"] <- letterProbs[4,2]
+  probbase[probbase == "B+"] <- letterProbs[5,2]
+  probbase[probbase == "B"] <- letterProbs[6,2]
+  probbase[probbase == "B-"] <- letterProbs[7,2]
+  probbase[probbase == "B -"] <- letterProbs[8,2]
+  probbase[probbase == "C+"] <- letterProbs[9,2]
+  probbase[probbase == "C"] <- letterProbs[10,2]
+  probbase[probbase == "C-"] <- letterProbs[11,2]
+  probbase[probbase == "D+"] <- letterProbs[12,2]
+  probbase[probbase == "D"] <- letterProbs[13,2]
+  probbase[probbase == "D-"] <- letterProbs[14,2]
+  probbase[probbase == "E"] <- letterProbs[15,2]
+  probbase[probbase == "N"] <- letterProbs[16,2]
+  probbase[probbase == ""] <- letterProbs[17,2]
   #probbase[1, 1:13] <- rep(0, 13)
+  #END NEW SECTION
   
   # Specify the columns to sum
   probbase<-as.data.frame(probbase)
@@ -95,9 +128,9 @@ recoverAnswers=function(VA,block,method="OpenVA",data.type = "WHO2012",
   probbase <- probbase[, !names(probbase) %in% cols_to_sum]
   
   #Run VA algorithm
-  output_new <- codeVA(data = new_data, data.type = data.type, 
-                       model = model, version = version, 
-                       HIV = HIV, Malaria = Malaria)
+  output_new <- calibrateVA::codeVA2(data = new_data, data.type = data.type, 
+                                     model = model, version = version, 
+                                     HIV = HIV, Malaria = Malaria, probBase = probBase, letterProb = letterProb)
   
   #CSMF
   CSMFs_new <- as.matrix(getCSMF(output_new))
@@ -117,6 +150,10 @@ recoverAnswers=function(VA,block,method="OpenVA",data.type = "WHO2012",
   }
   return(list(Original=VA[,block],Imputed=total))
 }
+
+
+
+
 
 
 
