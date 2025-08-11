@@ -556,6 +556,195 @@ va<- cbind(ID,elder,midage,adult,child,under5,infant,neonate,male,female,va)
 
 
 ##**********************************************************************
+#Simulating VA function-first attempt
+##**********************************************************************
+##
+
+#Simulation of VA data
+
+##' Simulation of VA data (WHO2012)
+##' @name simulateVA
+##' @description Simulates VA data. Format is WHO2012. Example; data(RandomVA1). Compatible for InterVA4 and InSilicoVA models
+##' @param n Number of simulations
+##' @param blocks A list of blocks of questions. Each block is a set of indices for questions, corresponding to rows in VA. MUST EXCLUDE the first block containing 9 questions for sex/age. See data(RandomVA1) for explicit coloumns.
+##' @param probBase A customised probability matrix with 245 row symptomns on 60 column causes in the same order as InterVA4 specification. For example input see condprobnum.
+##' @param pi Vector of prior probabilities for the 60 causes of death- must sum to 1
+##' @param covs List of Covariance matrices for each block of questions in argument blocks
+##' @param ageProb Vector of probability for age in order c(elder,midage,adult,child,under5,infant,neonate) 
+##' @param sexProb Vector of probability for sex in order c(male,female) 
+##' @return n simulations of WHO2012 VA data
+##' @export
+##' @examples
+##'#Number of simulations
+##'n=100
+##'
+##'#Randomly assign pi
+##'random_vector <- runif(60)
+##'# Normalize to sum to 1
+##'pi <- random_vector / sum(random_vector)
+##'
+##'
+##'# Take known probbase (60 causes and first 245 questions)
+##'data(condprobnum)
+##'pb= condprobnum
+##'
+##'#Or random probbase
+##'#pb=matrix(runif(length(pi)*245),nrow=245,ncol=length(pi))
+##'#Different to previous attempts as we want input probBase to be full probbase(exactly same as condprobnum), not a subset of it(or letter probBase)
+##'
+##'#List blocks of questions which are conditionally independent-leaving out first block(age/sex questions)- needed for this version to work
+##'blocks=block_text$Index[-1]
+##'
+##'
+##'#Covariance function
+##'dcov=function(n,xc=0.1) diag(n) + (1-diag(n))*xc
+##'
+##'#Covariance matrix for each block of questions
+##'covs<-vector("list", length = length(blocks))
+##'for (k in 1:length(blocks)) {
+##'covs[[k]]<- dcov(length(blocks[[k]]),0.1)
+##'}
+##'
+##'
+##'#Age probs
+##'ageProb<- c(1/3,1/3,1/3,0,0,0,0)
+##'
+##'#Sex probs
+##'sexProb<-c(0.5,0.5)
+##'
+##'simVA<-simulateVA(n,pi,pb,blocks,covs,ageProb,sexProb)
+##'
+
+
+
+simulateVA<- function(n,pi,probBase,blocks,covs, ageProb, sexProb){
+  
+  ## package for multivariate normal simulation
+  library(mnormt)
+  
+  # n: number of simulations
+  # pi: disease frequency
+  # pb: probbase
+  #covs: Covariance matrix for each block of questions
+  
+  #Probbase must be numeric- need to extract probbase without Q1-9 for this method
+  #Hence we say argument probbase specify full probbase, ie condprobnum then pb is just this without first 9 questions
+  
+  pb<- probBase[10:245,]
+  
+  # Number of causes of death
+  n_cod=as.numeric(length(pi))
+  
+  # Number of questions
+  n_q=as.numeric(nrow(pb))
+  
+  # Number of blocks(input excludes initial block of age/sex questions-simulated separately)
+  n_block=as.numeric(length(blocks))
+  
+  #Simulate all questions apart from first 9
+  
+  # Firstly simulate under conditional independence
+  va=matrix(NA,n,n_q)
+  for (i in 1:n) {
+    cause_of_death=sample(1:n_cod,1,prob=pi)
+    
+    qprobs=pb[,cause_of_death]
+    
+    answers=rep(NA,n_q)
+    #Adjusting for the fact treating first block(9 questions) seperately
+    for (b in 1:n_block) {
+      wq=blocks[[b]] # indices of questions in block b
+      bcov=covs[[b]] # covariance matrix for latent variable
+      nb=length(wq) # number of questions in block
+      
+      latent_q=rmnorm(1,mean=rep(0,nb),varcov=bcov)
+      
+      #-10 as we ignoring first 9 questions at the moment and simulate that seperately
+      bprobs=qprobs[wq-10]
+      thresholds=qnorm(1-bprobs)
+      
+      answers[wq-10]=latent_q>thresholds
+    }
+    va[i,]=answers
+  }
+  
+  #Apply correct coloumn names
+  data("RandomVA1", package = "InSilicoVA")
+  colnames(va)<- colnames(RandomVA1)[-c(1:10)]
+  
+  #Change TRUE/FALSE to Y/""
+  va <- ifelse(va, "Y", "")
+  
+  #Now add first 9 question simulation
+  
+  #Need to simulate id column, age, and sex
+  
+  #Simulate ID
+  ID<- rep(0,n)
+  for(i in 1:n){
+    ID[i]<-paste0("d",i)
+  }
+  
+  #Simulate age
+  
+  elder<-rep("",n)
+  midage<- rep("",n)
+  adult<- rep("",n)
+  child<- rep("",n)
+  under5<- rep("",n)
+  infant<- rep("",n)
+  neonate<- rep("",n)
+  for (i in 1:n) {
+    x<- sample(c(0,1,2,3,4,5,6),1,prob = ageProb)
+    if(x==0){
+      elder[i]<-"Y"
+    }
+    if(x==1){
+      midage[i]<-"Y"
+    }
+    if(x==2){
+      adult[i]<-"Y"
+    }
+    if(x==3){
+      child[i]<-"Y"
+    }
+    if(x==4){
+      under5[i]<-"Y"
+    }
+    if(x==5){
+      infant[i]<-"Y"
+    }
+    if(x==6){
+      neonate[i]<-"Y"
+    }
+  }
+  
+  #Simulate sex
+  male<-rep("",n)
+  female<- rep("",n)
+  for (i in 1:n) {
+    x<- sample(c(0,1),1,prob = sexProb)
+    if(x==0){
+      male[i]<-"Y"
+    }
+    if(x==1){
+      female[i]<-"Y"
+    }
+  }
+  
+  #Combining to get final VA
+  va<- cbind(ID,elder,midage,adult,child,under5,infant,neonate,male,female,va)
+  return(as.data.frame(va))
+}
+
+
+
+
+
+
+
+
+##**********************************************************************
 #Custom InterVA- allow custom probbase/letter probabilities
 ##**********************************************************************
 ##
