@@ -406,18 +406,19 @@ va <- ifelse(va, "Y", "")
 
 
 ##**********************************************************************
-#Custom InterVA- allow custom probbase
+#Custom InterVA- allow custom probbase/letter probabilities
 ##**********************************************************************
 ##
 
 
-#Allow custom probbase for InterVA2- currently not working when only added small section as indicated
+#Allow custom probbase/letter probabilities for InterVA2- working
 
-##' Provide InterVA4 analysis on the data input(with custom probbase option)
+##' Provide InterVA4 analysis on the data input(with custom probbase/letter probability options)
 ##' @name InterVA2
 ##' @description This function implements the algorithm in the InterVA4 software. 
-##' It produces individual cause of death and population cause-specific mortality fractions. Allows for customised probbase
+##' It produces individual cause of death and population cause-specific mortality fractions. Allows for customised probbase of the exact form of data(probbase) and also allows custom letter probabilities for the probbase.
 ##' @param probBase Default null; uses data(probbase). Any custom probbase must be of exact same format as data(probbase).
+##' @param letterProb A data frame with first coloumn letter and second coloumn the corresponding probabilities. If left null then will use the following default: data.frame(grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),value = c(1, 0.8, 0.5, 0.2, 0.1, 0.05, 0.02, 0.02,0.01, 0.005, 0.002, 0.001, 0.0005, 0.0001, 0.00001, 0, 0))
 ##' @param Input A matrix input, or data read from csv files in the same format as required by InterVA4. Sample input is included as data(SampleInput).
 ##' @param HIV An indicator of the level of prevalence of HIV. The input should be one of the following: "h"(high),"l"(low), or "v"(very low).
 ##' @param Malaria An indicator of the level of prevalence of Malaria. The input should be one of the following: "h"(high),"l"(low), or "v"(very low).
@@ -426,7 +427,7 @@ va <- ifelse(va, "Y", "")
 ##' @param output "classic": The same deliminated output format as InterVA4; or "extended": deliminated output followed by full distribution of cause of death proability.
 ##' @param append A logical value indicating whether or not the new output should be appended to the existing file.
 ##' @param groupcode A logical value indicating whether or not the group code will be included in the output causes.
-##' @param replicate A logical value indicating whether or not the calculation should replicate original InterVA4 software (version 4.02) exactly. If replicate = F, causes with small probability are not dropped out of calculation in intermediate steps, and a possible bug in original InterVA4 implementation is fixed. If replicate=T, then the output values will be exactly as they would be from calling the InterVA4 program (version 4.02). If replicate=F, the output values will be the same as calling the InterVA4 program (version 4.03). Since version 1.7.3, setting replicate to be FALSE also includes changes to data checking rules and pre-set conditional probabilities to be the same as the official version 4.03 software. Since version 1.6, two control variables are added to control the two bugs respectively. Setting this to TRUE will overwrite both to TRUE.
+##' @param replicates A logical value indicating whether or not the calculation should replicate original InterVA4 software (version 4.02) exactly. If replicates = F, causes with small probability are not dropped out of calculation in intermediate steps, and a possible bug in original InterVA4 implementation is fixed. If replicates=T, then the output values will be exactly as they would be from calling the InterVA4 program (version 4.02). If replicates=F, the output values will be the same as calling the InterVA4 program (version 4.03). Since version 1.7.3, setting replicates to be FALSE also includes changes to data checking rules and pre-set conditional probabilities to be the same as the official version 4.03 software. Since version 1.6, two control variables are added to control the two bugs respectively. Setting this to TRUE will overwrite both to TRUE.
 ##' @param replicate.bug1 This logical indicator controls whether or not the bug in InterVA4.2 involving the symptom "skin_les" will be replicated or not. It is suggested to set to FALSE.
 ##' @param replicate.bug2 This logical indicator controls whether the causes with small probability are dropped out of calculation in intermediate steps or not. It is suggested to set to FALSE.
 ##' @param write A logical value indicating whether or not the output (including errors and warnings) will be saved to file.
@@ -434,28 +435,43 @@ va <- ifelse(va, "Y", "")
 ##' @return Accuracy of probbase
 ##' @export
 ##' @examples
+##' 
 ##' data(SampleInput)
 ##' to get easy-to-read version of causes of death make sure the column
 ##' orders match interVA4 standard input this can be monitored by checking
 ##' the warnings of column names
 ##' 
+##' 
 ##' #Use a custom probbase
+##' data("probbase")
 ##' probbase2<- probbase
 ##' probbase2[,19]<-"A"
+##' 
+##' 
+##' #Custom letter probabilities
 ##' sample.output1 <- InterVA2(SampleInput, HIV = "h", Malaria = "l", write=FALSE, 
-##' replicate = FALSE, probBase=probbase2)
+##' replicates = FALSE, probBase=probbase2, letterProb = data.frame(
+##' grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", 
+##' "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),
+##' value = c(1, 1, 0.7, 0.2, 0.9, 1, 0.02, 0.4,
+##' 0.01, 0.005, 0, 0, 0.2, 0, 0.00001, 0, 0)))
+##' 
 ##' 
 ##' to get causes of death with group code for further usage
 ##' sample.output2 <- InterVA2(SampleInput, HIV = "h", Malaria = "l", write=FALSE,
-##' replicate = FALSE, groupcode = TRUE, probBase=probbase2)
+##' replicates = FALSE, groupcode = TRUE, probBase=probbase2, letterProb = NULL)
+##' 
+##' 
+##' Using default probbase and letter probabilities
+##' sample.output3 <- InterVA2(SampleInput, HIV = "h", Malaria = "l", write=FALSE,
+##' replicates = FALSE, groupcode = TRUE, probBase=NULL, letterProb = NULL)
 
 
 
 InterVA2<-function (Input, HIV, Malaria, directory = NULL, filename = "VA_result", 
-          output = "classic", append = FALSE, groupcode = FALSE, replicate = FALSE,probBase=NULL, 
+          output = "classic", append = FALSE, groupcode = FALSE, replicates = FALSE,probBase=NULL, letterProb=NULL,
           replicate.bug1 = FALSE, replicate.bug2 = FALSE, write = TRUE, 
-          ...) fit <- InterVA4::InterVA(Input = data, HIV = HIV, 
-                                        Malaria = Malaria, replicate = replicate, ...)
+          ...)
 {
   va <- function(ID, MALPREV, HIVPREV, PREGSTAT, PREGLIK, PRMAT, 
                  INDET, CAUSE1, LIK1, CAUSE2, LIK2, CAUSE3, LIK3, wholeprob, 
@@ -496,8 +512,8 @@ InterVA2<-function (Input, HIV, Malaria, directory = NULL, filename = "VA_result
     write.table(t(x), file = filename, sep = ",", append = TRUE, 
                 row.names = FALSE, col.names = FALSE)
   }
-  if (replicate) {
-    warning("option 'replicate' is turned on, all bugs in InterVA-4 is replicated\n", 
+  if (replicates) {
+    warning("option 'replicates' is turned on, all bugs in InterVA-4 is replicated\n", 
             immediate. = TRUE)
     replicate.bug1 <- TRUE
     replicate.bug2 <- TRUE
@@ -515,11 +531,16 @@ InterVA2<-function (Input, HIV, Malaria, directory = NULL, filename = "VA_result
   if(!is.null(probBase)){
     probbase<- probBase
   }
-  #END NEW SECTION
-  if (!replicate) {
-    data("probbase3", envir = environment())
-    probbase <- get("probbase3", envir = environment())
+  if (!replicates) {
+    if(!is.null(probBase)){
+      probbase<- probBase
+    }
+    if(is.null(probBase)){
+      data("probbase3", envir = environment())
+      probbase <- get("probbase3", envir = environment())
+    }
   }
+  #END NEW SECTION
   probbase <- as.matrix(probbase)
   data("causetext", envir = environment())
   causetext <- get("causetext", envir = environment())
@@ -564,23 +585,34 @@ InterVA2<-function (Input, HIV, Malaria, directory = NULL, filename = "VA_result
             call. = FALSE, immediate. = TRUE)
     colnames(Input) <- valabels
   }
-  probbase[probbase == "I"] <- 1
-  probbase[probbase == "A+"] <- 0.8
-  probbase[probbase == "A"] <- 0.5
-  probbase[probbase == "A-"] <- 0.2
-  probbase[probbase == "B+"] <- 0.1
-  probbase[probbase == "B"] <- 0.05
-  probbase[probbase == "B-"] <- 0.02
-  probbase[probbase == "B -"] <- 0.02
-  probbase[probbase == "C+"] <- 0.01
-  probbase[probbase == "C"] <- 0.005
-  probbase[probbase == "C-"] <- 0.002
-  probbase[probbase == "D+"] <- 0.001
-  probbase[probbase == "D"] <- 5e-04
-  probbase[probbase == "D-"] <- 1e-04
-  probbase[probbase == "E"] <- 1e-05
-  probbase[probbase == "N"] <- 0
-  probbase[probbase == ""] <- 0
+  #NEW SECTION
+  if(is.null(letterProb)){
+    letterProbs <- data.frame(Letter = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", 
+                                         "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),
+                              Prob = c(1, 0.8, 0.5, 0.2, 0.1, 0.05, 0.02, 0.02,
+                                       0.01, 0.005, 0.002, 0.001, 0.0005, 0.0001, 0.00001, 0, 0))
+  }
+  if(!is.null(letterProb)){
+    letterProbs <- letterProb
+  }
+  probbase[probbase == "I"] <- letterProbs[1,2]
+  probbase[probbase == "A+"] <- letterProbs[2,2]
+  probbase[probbase == "A"] <- letterProbs[3,2]
+  probbase[probbase == "A-"] <- letterProbs[4,2]
+  probbase[probbase == "B+"] <- letterProbs[5,2]
+  probbase[probbase == "B"] <- letterProbs[6,2]
+  probbase[probbase == "B-"] <- letterProbs[7,2]
+  probbase[probbase == "B -"] <- letterProbs[8,2]
+  probbase[probbase == "C+"] <- letterProbs[9,2]
+  probbase[probbase == "C"] <- letterProbs[10,2]
+  probbase[probbase == "C-"] <- letterProbs[11,2]
+  probbase[probbase == "D+"] <- letterProbs[12,2]
+  probbase[probbase == "D"] <- letterProbs[13,2]
+  probbase[probbase == "D-"] <- letterProbs[14,2]
+  probbase[probbase == "E"] <- letterProbs[15,2]
+  probbase[probbase == "N"] <- letterProbs[16,2]
+  probbase[probbase == ""] <- letterProbs[17,2]
+  #END NEW SECTION
   probbase[1, 1:13] <- rep(0, 13)
   Sys_Prior <- as.numeric(probbase[1, ])
   D <- length(Sys_Prior)
@@ -785,7 +817,6 @@ InterVA2<-function (Input, HIV, Malaria, directory = NULL, filename = "VA_result
   class(out) <- "interVA"
   return(out)
 }
-
 
 
 
