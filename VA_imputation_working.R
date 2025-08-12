@@ -739,6 +739,79 @@ simulateVA<- function(n,pi,probBase,blocks,covs, ageProb, sexProb){
 
 
 
+##**********************************************************************
+#Methods for generating covariance matrices for blocks
+##**********************************************************************
+##
+
+#Covariance for blocks
+
+#Method 1: all blocks have same covariance structure
+dcov=function(n,xc=0.1) diag(n) + (1-diag(n))*xc
+#Covariance matrix for each block of questions
+covs<-vector("list", length = length(blocks))
+
+#Method 2: Introduce negative covariance for "binary" blocks
+#Negative correlation for binary blocks of questions: dcov(2,-0.95)
+#Need to loop around certain blocks
+
+dcov=function(n,xc=0.1) diag(n) + (1-diag(n))*xc
+
+#Blocks of binary questions and names for reference
+binary_blocks<-c(1,2,3,4,22,29,32,33,37,38,50,51,62,71,73,78)
+binary_blocks_names<- block_text$Names[binary_blocks +1]
+
+#Covariance matrix for each block of questions
+covs<-vector("list", length = length(blocks))
+for (k in 1:length(blocks)) {
+  if(k %in% binary_blocks){
+  covs[[k]]<- dcov(length(blocks[[k]]),-0.95)
+  }
+  if(!(k %in% binary_blocks)){
+    covs[[k]]<- dcov(length(blocks[[k]]),0.1)
+  }
+}
+
+
+#Method 3: Random covariance matrices for each block
+#Need number of simulations n to be bigger than d, dimension of cov matrix(ie length of each block)
+#library(mnormt)
+#X=rmnorm(20,mean=rep(0,10),varcov=diag(10))
+#M=cor(X)
+#Not singular as non zero eigenvalue
+#min(eigen(M)$values)
+#Need to loop this around blocks
+
+
+dcov=function(n,xc=0.1) diag(n) + (1-diag(n))*xc
+
+#Blocks of binary questions and names for reference
+binary_blocks<-c(1,2,3,4,22,29,32,33,37,38,50,51,62,71,73,78)
+binary_blocks_names<- block_text$Names[binary_blocks +1]
+
+# Constants
+max_len <- max(sapply(blocks, length)) + 20
+covs <- vector("list", length = length(blocks))
+
+library(mnormt)
+for (k in seq_along(blocks)) {
+  n_vars <- length(blocks[[k]])
+  
+  # Simulate data
+  X <- rmnorm(max_len, mean = rep(0, n_vars), varcov = diag(n_vars))
+  X <- matrix(X, ncol = n_vars)
+  # Choose sign for correlations
+  if (k %in% binary_blocks) {
+    M <- -abs(cor(X))  # Negative correlations
+  } else {
+    M <- abs(cor(X))   # Positive correlations
+  }
+  
+  diag(M) <- 1  # Ensure correlation matrix diagonal = 1
+  
+  covs[[k]] <- M
+}
+
 
 
 
