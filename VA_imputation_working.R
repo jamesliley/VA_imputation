@@ -556,7 +556,7 @@ va<- cbind(ID,elder,midage,adult,child,under5,infant,neonate,male,female,va)
 
 
 ##**********************************************************************
-#Simulating VA function-first attempt
+#Simulating VA function-second attempt
 ##**********************************************************************
 ##
 
@@ -572,6 +572,8 @@ va<- cbind(ID,elder,midage,adult,child,under5,infant,neonate,male,female,va)
 ##' @param covs List of Covariance matrices for each block of questions in argument blocks
 ##' @param ageProb Vector of probability for age in order c(elder,midage,adult,child,under5,infant,neonate) 
 ##' @param sexProb Vector of probability for sex in order c(male,female) 
+##' @param woman_block A subset of the list blocks for which the questions are for female deaths only
+##' @param neonate_block A subset of the list blocks for which the questions are for neonates deaths only
 ##' @return n simulations of WHO2012 VA data
 ##' @export
 ##' @examples
@@ -612,12 +614,23 @@ va<- cbind(ID,elder,midage,adult,child,under5,infant,neonate,male,female,va)
 ##'#Sex probs
 ##'sexProb<-c(0.5,0.5)
 ##'
-##'simVA<-simulateVA(n,pi,pb,blocks,covs,ageProb,sexProb)
+##'#Blocks of questions just for women deaths
+##'woman_block<-blocks[c(1,48,50:61)]
+##'woman_block_index<-c(1,48,50:61)
+##'woman_block_names<- block_text$Names[woman_block_index +1]
+##'
+##'Blocks of questions just for neonate deaths
+##'neonate_block<-blocks[c(2,62:76)]
+##'neonate_block_index<-c(2,62:76)
+##'neonate_block_names<- block_text$Names[neonate_block_index +1]
+##'
+##'simVA<-simulateVA(n,pi,pb,blocks,covs,ageProb,sexProb,woman_block,neonate_block)
 ##'
 
 
 
-simulateVA<- function(n,pi,probBase,blocks,covs, ageProb, sexProb){
+
+simulateVA<- function(n,pi,probBase,blocks,covs, ageProb, sexProb, woman_block,neonate_block){
   
   ## package for multivariate normal simulation
   library(mnormt)
@@ -734,8 +747,20 @@ simulateVA<- function(n,pi,probBase,blocks,covs, ageProb, sexProb){
   
   #Combining to get final VA
   va<- cbind(ID,elder,midage,adult,child,under5,infant,neonate,male,female,va)
-  return(as.data.frame(va))
+  va<-as.data.frame(va)
+  #Removing answers which don't make sense- due to age/sex
+  for(i in 1:n){
+    if(va$female[i] == ""){
+      va[i,unlist(woman_block)]<- ""
+    }
+    if(va$neonate[i] == ""){
+      va[i,unlist(neonate_block)]<- ""
+    }
+  }
+  return(va)
 }
+
+
 
 
 
