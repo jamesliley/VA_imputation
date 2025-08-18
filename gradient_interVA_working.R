@@ -834,7 +834,7 @@ recoverAnswers= function(VA,block,method="OpenVA",data.type = "WHO2012",
 
   
   #CSMF
-  CSMFs_new <- as.matrix(getCSMF(output_new))
+  CSMFs_new <- as.matrix(getCSMF(output_new, interVA.rule=FALSE))
   assigned_causes_new <- data.frame(
     Cause = rownames(CSMFs_new),
     Value = as.numeric(CSMFs_new[, 1]),
