@@ -467,39 +467,60 @@ evaluateProbbase<-function(VA,blocks, method = "OpenVA",data.type = "WHO2012", m
 
 
 
+##**********************************************************************
+#gradientProbbase function
+##**********************************************************************
+##
 
 
 
-
-##' Partial Derivative of Imputation Accuracy with respect to a single element of the probbase(for InSilico)
+##' Partial Derivative of Imputation Accuracy with respect to a single element of the probbase
 ##' @name gradientProbbase
 ##' @description Takes a dataset of verbal autopsies, a set of multiple blocks of questions and a VA algorithm, a value for epsilon and a single element of the probbase.
 ##' Sets the answers to those questions to 'missing', and attempts to impute their values for each block in turn.
 ##' Then calculates overall accuracy of the probbase by averaging imputed values across all answers set to missing. 
-##' Repeat this for a modified probbase by changing a single element by epsilon. Partial derivative with respect to this element of the probbase is the difference between accuracy.
+##' Repeat this for a modified probbase by changing a single element by epsilon. Partial derivative with respect to this element of the probbase is the difference between accuracy divided by epsilon.
 ##' @param VA VA dataset, in the format of (e.g.) RandomVA1
 ##' @param blocks A list of blocks of questions. Each block is a set of indices for questions, corresponding to rows in VA
 ##' @param CondProbNum A customised probability matrix with 245 row symptomns on 60 column causes in the same order as InterVA4 specification. For example input see condprobnum.
-##' @param epsilon The amount to adjust the element of the probbase by
-##' @param probbase_element The element of the probbase you want to find the partial derivative with respect to
+##' @param epsilon A small value you want to add to the selected probbase element. If causes probability to go out of range (0,1) then reverse operation(addition or subtraction) will be made so within the range. Absolute value of epsilon should be <=0.1. Epsilon can be positive or negative.
+##' @param probbase_element The element of the probbase you want to find the partial derivative with respect to indexed by a list
 ##' @param method Method for attaining cause-of-death distribution from VA answers; default 'OpenVA'
 ##' @param data.type Format of the VA data; default 'WHO2012'
-##' @param model VA algorithm used; at the moment supports 'InterVA' and "InSilicoVA
+##' @param model VA algorithm used; at the moment supports 'InterVA' and "InSilicoVA"
 ##' @param version Version of InterVA used; default '4.03'
 ##' @param HIV Set as 'h','m','l' for InterVA
 ##' @param Malaria Set as 'h','m','l' for InterVA
-##' @return Accuracy of probbase
+##' @return Partial Derivative of Imputation Accuracy with respect to a single element of the probbase
 ##' @export
 ##' @examples
 ##' ## Impute blocks of questions 18-20 and 21-24, use probbase condprobnum and change element (1,1) of probbase by 0.1
 ##' data("condprobnum")
 ##' data("RandomVA1")
-##' out<- gradient_probbase(RandomVA1[1:100,],block=list(18:20, 21:24),method="OpenVA",data.type = "WHO2012",
+##' out<- gradientProbbase(RandomVA1[1:100,],block=list(18:20, 21:24),method="OpenVA",data.type = "WHO2012",
 ##' model = "InSilicoVA",CondProbNum=condprobnum, probbase_element = list(1,1) , epsilon = 0.1)
+##' 
+##' 
+##' ## Impute blocks of questions 18-20 and 21-24, use probbase2 and change element (10,25) of probbase by 0.4
+##' data("probbase")
+##' data("RandomVA1")
+##' probbase2<- probbase
+##' probbase2[10,22]<-"A"
+##' out<- gradientProbbase(RandomVA1[1:100,],block=list(18:20, 21:24),method="OpenVA",data.type = "WHO2012",
+##' model = "InterVA",probBase=probbase2, probbase_element = list(10,25) , epsilon = 0.4)
+##' 
+##' 
+##' ## Impute blocks of questions 18-20 and 21-24, use probbase and change element (10,25) of probbase by 0.4
+##' data("probbase")
+##' data("RandomVA1")
+##' out<- gradientProbbase(RandomVA1[1:100,],block=list(18:20, 21:24,50:55),method="OpenVA",data.type = "WHO2012",
+##' model = "InterVA",probBase=probbase, probbase_element = list(10,25) , epsilon = -0.7)
+##' 
 
 
-gradient_probbase<- function(VA, blocks, epsilon, method = "OpenVA", probbase_element,
-                             data.type = "WHO2012", model,CondProbNum, version = NULL, HIV = NULL, 
+
+gradientProbbase<- function(VA, blocks, epsilon, method = "OpenVA", probbase_element, probBase=NULL, letterProb=NULL,
+                             data.type = "WHO2012", model,CondProbNum=NULL, version = NULL, HIV = NULL, 
                              Malaria = NULL){
   #Calculate imputation accuracy with element of probbase set to original value.
   #Then change element of the probbase to original + epsilon
@@ -516,20 +537,45 @@ gradient_probbase<- function(VA, blocks, epsilon, method = "OpenVA", probbase_el
                                   data.type = data.type,
                                   model=model,
                                   CondProbNum = CondProbNum,
+                                  probBase = probBase,
+                                  letterProb = letterProb,
                                   version = version,
                                   HIV = HIV,
                                   Malaria = Malaria)
-  new_probbase<- CondProbNum
-  new_probbase[probbase_element[[1]], probbase_element[[2]]]<- new_probbase[probbase_element[[1]],probbase_element[[2]]] + epsilon
-  accuracy_new <- evaluateProbbase(VA=VA,
-                                   blocks=blocks,
-                                   method = method,
-                                   data.type = data.type,
-                                   model=model,
-                                   CondProbNum = new_probbase,
-                                   version = version,
-                                   HIV = HIV,
-                                   Malaria = Malaria)
+  if(model == "InSilicoVA"){
+    new_probbase<- CondProbNum
+    new_probbase[probbase_element[[1]], probbase_element[[2]]]<- new_probbase[probbase_element[[1]],probbase_element[[2]]] + epsilon
+    #New part- if out of range (0,1), need to minus epsilon then minus epsilon again to get reverse operation applied to orginal probbase
+    if(new_probbase[probbase_element[[1]], probbase_element[[2]]] > 1){
+      new_probbase[probbase_element[[1]], probbase_element[[2]]]<- as.numeric(new_probbase[probbase_element[[1]], probbase_element[[2]]]) - 2*epsilon
+    }
+    if(new_probbase[probbase_element[[1]], probbase_element[[2]]] < 0){
+      new_probbase[probbase_element[[1]], probbase_element[[2]]]<- as.numeric(new_probbase[probbase_element[[1]], probbase_element[[2]]]) - 2*epsilon
+    }
+    accuracy_new <- evaluateProbbase(VA=VA,
+                                     blocks=blocks,
+                                     method = method,
+                                     data.type = data.type,
+                                     model=model,
+                                     CondProbNum = new_probbase,
+                                     version = version,
+                                     HIV = HIV,
+                                     Malaria = Malaria)
+    }
+  if(model == "InterVA"){
+    accuracy_new <- evaluateProbbase(VA=VA,
+                                     blocks=blocks,
+                                     method = method,
+                                     data.type = data.type,
+                                     model=model,
+                                     probBase = probBase,
+                                     letterProb = letterProb,
+                                     version = version,
+                                     HIV = HIV,
+                                     Malaria = Malaria, probbase_element = probbase_element, epsilon = epsilon)
+    }
   gradient<- (accuracy_new - accuracy_original)/epsilon
   return(Gradient = gradient)
 }
+
+
