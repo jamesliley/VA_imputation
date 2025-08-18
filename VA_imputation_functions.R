@@ -861,6 +861,264 @@ InterVAepsilon<-function (Input, HIV, Malaria, directory = NULL, filename = "VA_
 }
 
 
+##**********************************************************************
+#Allow custom probbase/letter grade for InterVA using codeVA function
+##**********************************************************************
+##
+
+
+##' Version of codeVA which provides InterVA4 analysis with custom probbase/letter probability options
+##' @name codeVA2
+##' @description This function implements the codeVA function but allows for customised probbase of the exact form of data(probbase) and also allows custom letter probabilities for the probbase when using InterVA.
+##' @param probBase Default null; uses data(probbase). Any custom probbase must be of exact same format as data(probbase). Only use custom probbase for InterVA model; see insilico function for custom probbase for InSilicoVA model
+##' @param letterProb A data frame with first coloumn letter and second coloumn the corresponding probabilities. Should only be specified if using InterVA model and want to change default. If left null then will use the following default: data.frame(grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),value = c(1, 0.8, 0.5, 0.2, 0.1, 0.05, 0.02, 0.02,0.01, 0.005, 0.002, 0.001, 0.0005, 0.0001, 0.00001, 0, 0))
+##' @param probbase_element An element of the probbase you want to change by epsilon indexed as a list
+##' @param epsilon A small value you want to add to the selected probbase element. If causes probability to go out of range (0,1) then reverse operation(addition or subtraction) will be made so within the range. Absolute value of epsilon should be <=0.1. Epsilon can be positive or negative.
+##' @param Input A matrix input, or data read from csv files in the same format as required by InterVA4. Sample input is included as data(SampleInput).
+##' @param HIV An indicator of the level of prevalence of HIV. The input should be one of the following: "h"(high),"l"(low), or "v"(very low).
+##' @param Malaria An indicator of the level of prevalence of Malaria. The input should be one of the following: "h"(high),"l"(low), or "v"(very low).
+##' @param directory The directory to store the output from InterVA4. It should either be an existing valid directory, or a new folder to be created. If no path is given, the current working directory will be used.
+##' @param filename The filename the user wish to save the output. No extension needed. The output is in .csv format by default.
+##' @param output "classic": The same deliminated output format as InterVA4; or "extended": deliminated output followed by full distribution of cause of death proability.
+##' @param append A logical value indicating whether or not the new output should be appended to the existing file.
+##' @param groupcode A logical value indicating whether or not the group code will be included in the output causes.
+##' @param replicates A logical value indicating whether or not the calculation should replicate original InterVA4 software (version 4.02) exactly. If replicates = F, causes with small probability are not dropped out of calculation in intermediate steps, and a possible bug in original InterVA4 implementation is fixed. If replicates=T, then the output values will be exactly as they would be from calling the InterVA4 program (version 4.02). If replicates=F, the output values will be the same as calling the InterVA4 program (version 4.03). Since version 1.7.3, setting replicates to be FALSE also includes changes to data checking rules and pre-set conditional probabilities to be the same as the official version 4.03 software. Since version 1.6, two control variables are added to control the two bugs respectively. Setting this to TRUE will overwrite both to TRUE.
+##' @param replicate.bug1 This logical indicator controls whether or not the bug in InterVA4.2 involving the symptom "skin_les" will be replicated or not. It is suggested to set to FALSE.
+##' @param replicate.bug2 This logical indicator controls whether the causes with small probability are dropped out of calculation in intermediate steps or not. It is suggested to set to FALSE.
+##' @param write A logical value indicating whether or not the output (including errors and warnings) will be saved to file.
+##' @param ... not used
+##' @return Accuracy of probbase
+##' @export
+##' @examples
+##' 
+##' data(RandomVA3)
+##' test <- RandomVA3[1:200, ]
+##' train <- RandomVA3[201:400, ]
+##' 
+##' 
+##' #Use for other models same as codeVA
+##' fit1 <- codeVA2(data = test, data.type = "customize", model = "InSilicoVA",
+##' data.train = train, causes.train = "cause",
+##' Nsim=1000, auto.length = FALSE)
+##' 
+##' 
+##' #Custom probbase/letter probabilities for InterVA
+##' data("probbase")
+##' probbase2<- probbase
+##' probbase2[10,22]<-"A"
+##' fit2 <- codeVA2(data = test, data.type = "customize", model = "InterVA",
+##' data.train = train, causes.train = "cause", write=FALSE,
+##' version = "4.02", HIV = "h", Malaria = "l", probBase = probbase2, letterProb = data.frame(
+##' grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", 
+##' "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),
+##' value = c(1, 1, 0.7, 0.2, 0.9, 1, 0.02, 0.4,
+##' 0.01, 0.005, 0, 0, 0.2, 0, 0.00001, 0, 0)))
+##' 
+##' 
+##' select probbase2[10,25] to change by +0.4
+##' fit2.1 <- y(data = test, data.type = "customize", model = "InterVA",
+##' data.train = train, causes.train = "cause", write=FALSE,
+##' version = "4.02", HIV = "h", Malaria = "l", probBase = probbase2, letterProb = data.frame(
+##' grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", 
+##' "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),
+##' value = c(1, 1, 0.7, 0.2, 0.9, 1, 0.02, 0.4,
+##' 0.01, 0.005, 0, 0, 0.2, 0, 0.00001, 0, 0)), probbase_element = list(10,25), epsilon = 0.4)
+##' 
+##' 
+##' #Default probbase and letter probabilities for InterVA
+##' fit2 <- codeVA2(data = test, data.type = "customize", model = "InterVA",
+##' data.train = train, causes.train = "cause", write=FALSE,
+##' version = "4.02", HIV = "h", Malaria = "l")
+
+
+codeVA2<-function (data, data.type = c("WHO2012", "WHO2016", "PHMRC", 
+                              "customize")[2], data.train = NULL, causes.train = NULL, probBase=NULL, letterProb=NULL,probbase_element=NULL, epsilon=NULL,
+          causes.table = NULL, model = c("InSilicoVA", "InterVA", "Tariff", 
+                                         "NBC")[1], Nchain = 1, Nsim = 10000, version = c("4.02", 
+                                                                                          "4.03", "5")[2], HIV = "h", Malaria = "h", phmrc.type = c("adult", 
+                                                                                                                                                    "child", "neonate")[1], convert.type = c("quantile", 
+                                                                                                                                                                                             "fixed", "empirical")[1], ...) 
+{
+  version <- as.character(version)
+  if (version == "5.0") 
+    version <- "5"
+  args <- as.list(match.call())
+  if (data.type == "WHO") {
+    data.type <- "WHO2012"
+    warning("The argument data.type of 'WHO' is no longer in use. 'WHO2012' or 'WHO2016' needs to be specified. Default change to 'WHO2012' for backward compatibility.\n", 
+            immediate. = TRUE)
+    args$data.type <- "WHO2012"
+  }
+  if (data.type == "WHO2016" & model == "InterVA" & version != 
+      "5") {
+    stop("Error: WHO2016 type input does not work with InterVA 4.02 or 4.03. Consider switching to 5")
+  }
+  if (data.type == "WHO2012" & model == "InterVA" & version == 
+      "5") {
+    stop("Error: WHO2012 type input does not work with InterVA 5. Consider switching to 4.03")
+  }
+  if (data.type %in% c("WHO2012", "WHO2016") && (model == "Tariff" || 
+                                                 model == "NBC")) {
+    if (is.null(data.train) || is.null(causes.train)) {
+      stop("Error: need training data for WHO questionnaire input with Tariff or NBC method.")
+    }
+  }
+  if (data.type == "customize") {
+    if (is.null(data.train) || is.null(causes.train)) {
+      stop("Error: need training data for customized input.")
+    }
+    tmp <- data[, -1]
+    tmp <- tmp[, colnames(tmp) != causes.train]
+    tmp <- toupper(as.character(as.matrix(tmp)))
+    if (sum(!tmp %in% c("Y", "", "N", ".", "-")) != 0) {
+      stop("Error: customized train/test data need to use ``Y`` to denote ``presence'', ``'' to denote ``absence'', and ``.'' to denote ``missing''.")
+    }
+  }
+  if (data.type == "PHMRC") {
+    if (is.null(data.train)) {
+      stop("Error: need training data for PHMRC data, possible training data could be obtained at http://ghdx.healthdata.org/record/population-health-metrics-research-consortium-gold-standard-verbal-autopsy-data-2005-2011")
+    }
+    if (is.null(causes.train)) {
+      stop("Error: please specify which column is the cause-of-death in PHMRC input")
+    }
+    binary <- ConvertData.phmrc(input = data.train, input.test = data, 
+                                cause = causes.train, phmrc.type = phmrc.type, convert.type = convert.type, 
+                                ...)
+    data.train <- binary$output
+    data <- binary$output.test
+    causes.train <- colnames(data.train)[2]
+  }
+  if (model == "InSilicoVA") {
+    if (is.null(Nsim)) {
+      stop("Please specify Nsim: number of iterations to draw from InSilicoVA sampler")
+    }
+    if (is.null(args$warning.write) && !(is.null(args$write))) {
+      args$warning.write <- args$write
+    }
+    if (is.null(args$burnin)) {
+      args$burnin <- round(Nsim/2)
+    }
+    if (is.null(args$thin)) {
+      args$thin <- 10 + 10 * (Nsim >= 10000)
+    }
+    if (is.null(args$Nsim)) {
+      args$Nsim <- Nsim
+    }
+    if (data.type %in% c("WHO2012", "WHO2016")) {
+      fit <- do.call("insilico", pairlist(args)[[1]][-1])
+    }
+    else if (data.type == "PHMRC" || data.type == "customize") {
+      args$data <- as.name("data")
+      args$train <- as.name("data.train")
+      args$cause <- as.name("causes.train")
+      args$type <- convert.type
+      fit <- do.call("insilico.train", pairlist(args)[[1]][-1])
+    }
+    else {
+      stop("Error: unknown data type specified")
+    }
+  }
+  #NEW SECTION
+  else if (model == "InterVA") {
+    if (version == "4.02") {
+      replicates = TRUE
+    }
+    else {
+      replicates = FALSE 
+    }
+    if (data.type == "WHO2012") {
+      if (is.null(args$write)) {
+        args$write <- FALSE
+      }
+      #NEW NEW SECTION
+      if(!is.null(probbase_element) && !is.null(epsilon)){
+      fit <- calibrateVA::InterVAepsilon(Input = data, HIV = HIV,probBase=probBase, letterProb = letterProb,
+                               Malaria = Malaria, replicates = replicates,probbase_element=probbase_element, epsilon=epsilon, ...)
+      }
+      else{
+      fit <- calibrateVA::InterVA2(Input = data, HIV = HIV,probBase=probBase, letterProb = letterProb,
+                               Malaria = Malaria, replicates = replicates, ...)
+      }
+      #END NEW NEW SECTION
+      #END NEW SECTION
+    }
+    else if (data.type == "WHO2016") {
+      if (is.null(args$write)) {
+        args$write <- FALSE
+      }
+      for (i in 1:dim(data)[2]) {
+        data[, i] <- as.character(data[, i])
+        data[, i][data[, i] == ""] <- "n"
+      }
+      tmp <- tolower(as.character(as.matrix(data[, -1])))
+      if (sum(tmp %in% c("y", "n", "-", ".")) < length(tmp)) {
+        stop("InterVA5 input data contains values other than 'y', 'n', '.', or '-'. Please check your input, especially for extra space characters in the cells, or standardize how missing data is coded.")
+      }
+      fit <- InterVA5::InterVA5(Input = data, HIV = HIV, 
+                                Malaria = Malaria, ...)
+    }
+    else if (data.type == "PHMRC" || data.type == "customize") {
+      fit <- interVA_train(data = data, train = data.train, 
+                           causes.train = causes.train, causes.table = causes.table, 
+                           type = convert.type, ...)
+    }
+    else {
+      stop("Error: unknown data type specified")
+    }
+  }
+  else if (model == "Tariff") {
+    if (data.type == "WHO2016") {
+      data <- ConvertData(data, yesLabel = c("y", "Y"), 
+                          noLabel = c("n", "N"), missLabel = c("-"))
+      data.train <- ConvertData(data.train, yesLabel = c("y", 
+                                                         "Y"), noLabel = c("n", "N"), missLabel = c("-"))
+    }
+    data.train[, causes.train] <- as.character(data.train[, 
+                                                          causes.train])
+    if (data.type %in% c("WHO2012", "WHO2016")) {
+      fit <- Tariff::tariff(causes.train = causes.train, 
+                            symps.train = data.train, symps.test = data, 
+                            causes.table = NULL, ...)
+    }
+    else if (data.type == "PHMRC" || data.type == "customize") {
+      fit <- Tariff::tariff(causes.train = causes.train, 
+                            symps.train = data.train, symps.test = data, 
+                            causes.table = NULL, ...)
+    }
+    else {
+      stop("Error: unknown data type specified")
+    }
+  }
+  else if (model == "NBC") {
+    if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
+      stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
+    }
+    if (data.type == "WHO2016") {
+      data <- ConvertData(data, yesLabel = c("y", "Y"), 
+                          noLabel = c("n", "N"), missLabel = c("-"))
+    }
+    data.train[, 1] <- as.character(data.train[, 1])
+    data[, 1] <- as.character(data[, 1])
+    fit <- nbc4va::ova2nbc(data.train, data, causes.train)
+    if (colnames(fit$prob)[1] != "CaseID") {
+      temp <- data.frame(CaseID = fit$test.ids)
+      fit$prob <- cbind(temp, fit$prob)
+    }
+    for (i in 1:dim(fit$prob)[1]) {
+      if (sum(fit$prob[i, -1]) > 0) {
+        fit$prob[i, -1] <- fit$prob[i, -1]/sum(fit$prob[i, 
+                                                        -1])
+      }
+    }
+  }
+  else {
+    stop("Error, unknown model specification")
+  }
+  return(fit)
+}
+
+
+
 
 ##**********************************************************************
 #recoverAnswers function
