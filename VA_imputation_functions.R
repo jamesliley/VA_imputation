@@ -41,6 +41,8 @@ logistic=function(x) {
 ##' @param block Set of indices for questions, corresponding to rows in VA
 ##' @param probBase Default null; uses data(probbase). Any custom probbase must be of exact same format as data(probbase). Only use custom probbase for InterVA model; see insilico function for custom probbase for InSilicoVA model
 ##' @param letterProb A data frame with first coloumn letter and second coloumn the corresponding probabilities. Should only be specified if using InterVA model and want to change default. If left null then will use the following default: data.frame(grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),value = c(1, 0.8, 0.5, 0.2, 0.1, 0.05, 0.02, 0.02,0.01, 0.005, 0.002, 0.001, 0.0005, 0.0001, 0.00001, 0, 0))
+##' @param probbase_element An element of the probbase you want to change by epsilon indexed as a list
+##' @param epsilon A small value you want to add to the selected probbase element. If causes probability to go out of range (0,1) then reverse operation(addition or subtraction) will be made so within the range. Absolute value of epsilon should be <=0.1. Epsilon can be positive or negative.
 ##' @param method Method for attaining cause-of-death distribution from VA answers; default 'OpenVA'
 ##' @param data.type Format of the VA data; default 'WHO2012'
 ##' @param model VA algorithm used; at the moment supports only 'InterVA'
@@ -51,6 +53,7 @@ logistic=function(x) {
 ##' @export
 ##' @examples
 ##' ## Impute block of questions 11-20
+##' 
 ##' data(RandomVA1)
 ##' out=recoverAnswers(RandomVA1,block=11:20,method="OpenVA",
 ##'                    data.type = "WHO2012",model = "InterVA",
@@ -61,9 +64,10 @@ logistic=function(x) {
 ##' 
 ##' 
 ##' ## Impute block of questions 11-20 with custom probbase and letter probabilities
+##' 
 ##' data("probbase")
 ##' probbase2<- probbase
-##' probbase2[,19]<-"A"
+##' probbase2[10,22]<-"A"
 ##' out=recoverAnswers(RandomVA1,block=11:20,method="OpenVA",
 ##' data.type = "WHO2012",model = "InterVA",
 ##' version = "4.03", HIV = "h", Malaria = "h",probBase = probbase2, letterProb = data.frame(
@@ -73,11 +77,23 @@ logistic=function(x) {
 ##' 0.01, 0.005, 0, 0, 0.2, 0, 0.00001, 0, 0)))
 ##' head(out$Original)
 ##' head(out$Imputed)
+##' 
+##' select probbase2[10,25] to change by +0.4
+##' 
+##' out=recoverAnswers(RandomVA1,block=11:20,method="OpenVA",
+##' data.type = "WHO2012",model = "InterVA",
+##' version = "4.03", HIV = "h", Malaria = "h",probBase = probbase2, letterProb = data.frame(
+##' grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", 
+##' "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),
+##' value = c(1, 1, 0.7, 0.2, 0.9, 1, 0.02, 0.4,
+##' 0.01, 0.005, 0, 0, 0.2, 0, 0.00001, 0, 0)), probbase_element =list(10,25) , epsilon = 0.4)
+##' head(out$Original)
+##' head(out$Imputed)
 
 
-recoverAnswers=function(VA,block,method="OpenVA",data.type = "WHO2012",
-           model = "InterVA", version = "4.03", HIV = "h", 
-           Malaria = "h", probBase=NULL, letterProb=NULL) {
+recoverAnswers= function(VA,block,method="OpenVA",data.type = "WHO2012",
+                           model = "InterVA", version = "4.03", HIV = "h", 
+                           Malaria = "h", probBase=NULL, letterProb=NULL, probbase_element=NULL, epsilon=NULL) {
   library(openVA)
   library(nbc4va)
   new_data<- VA
@@ -119,6 +135,17 @@ recoverAnswers=function(VA,block,method="OpenVA",data.type = "WHO2012",
   probbase[probbase == "E"] <- letterProbs[15,2]
   probbase[probbase == "N"] <- letterProbs[16,2]
   probbase[probbase == ""] <- letterProbs[17,2]
+  #NEW NEW SECTION- changing single element of probbase by epsilon
+  if(!is.null(probbase_element) && !is.null(epsilon)){
+    probbase[probbase_element[[1]], probbase_element[[2]]]<- as.numeric(probbase[probbase_element[[1]], probbase_element[[2]]]) + epsilon
+    if(probbase[probbase_element[[1]], probbase_element[[2]]] > 1){
+      probbase[probbase_element[[1]], probbase_element[[2]]]<- as.numeric(probbase[probbase_element[[1]], probbase_element[[2]]]) - 2*epsilon
+    }
+    if(probbase[probbase_element[[1]], probbase_element[[2]]] < 0){
+      probbase[probbase_element[[1]], probbase_element[[2]]]<- as.numeric(probbase[probbase_element[[1]], probbase_element[[2]]]) - 2*epsilon
+    }
+  }
+  #END NEW NEW SECTION
   #probbase[1, 1:13] <- rep(0, 13)
   #END NEW SECTION
   
@@ -135,10 +162,14 @@ recoverAnswers=function(VA,block,method="OpenVA",data.type = "WHO2012",
   #Run VA algorithm
   output_new <- calibrateVA::codeVA2(data = new_data, data.type = data.type, 
                                      model = model, version = version, 
-                                     HIV = HIV, Malaria = Malaria, probBase = probBase, letterProb = letterProb)
+                                     HIV = HIV, Malaria = Malaria, probBase = probBase, letterProb = letterProb, 
+                                     probbase_element = probbase_element, epsilon = epsilon)
   
   #CSMF
-  CSMFs_new <- as.matrix(getCSMF(output_new))
+  #Essentially this function takes the raw probabilities from interVA and sets the answer to ‘undetermined’
+  #with probability 1 if no probability exceeds 0.4. So you are usually getting this answer, whereas you 
+  #actually just want the raw probabilities. This is why interVA.rule=FALSE
+  CSMFs_new <- as.matrix(getCSMF(output_new, interVA.rule=FALSE))
   assigned_causes_new <- data.frame(
     Cause = rownames(CSMFs_new),
     Value = as.numeric(CSMFs_new[, 1]),
