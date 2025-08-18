@@ -366,6 +366,8 @@ recoverAnswers3=function(VA,block,method="OpenVA",data.type = "WHO2012",
 ##
 
 
+#Evaluating a probbase
+
 #Function to take several different blocks, impute in turn, find accuracy, then average to get probbase overall
 #accuracy
 ##' Evaluating a probbase for InSilico and InterVA models
@@ -377,6 +379,8 @@ recoverAnswers3=function(VA,block,method="OpenVA",data.type = "WHO2012",
 ##' @param blocks A list of blocks of questions. Each block is a set of indices for questions, corresponding to rows in VA
 ##' @param probBase Default null; uses data(probbase). Any custom probbase must be of exact same format as data(probbase). Only use this argument for custom probbase for InterVA model; see CondProbNum function for custom probbase for InSilicoVA model
 ##' @param letterProb A data frame with first coloumn letter and second coloumn the corresponding probabilities. Should only be specified if using InterVA model and want to change default. If left null then will use the following default: data.frame(grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),value = c(1, 0.8, 0.5, 0.2, 0.1, 0.05, 0.02, 0.02,0.01, 0.005, 0.002, 0.001, 0.0005, 0.0001, 0.00001, 0, 0))
+##' @param probbase_element An element of the probbase you want to change by epsilon indexed as a list
+##' @param epsilon A small value you want to add to the selected probbase element. If causes probability to go out of range (0,1) then reverse operation(addition or subtraction) will be made so within the range. Absolute value of epsilon should be <=0.1. Epsilon can be positive or negative.
 ##' @param method Method for attaining cause-of-death distribution from VA answers; default 'OpenVA'
 ##' @param data.type Format of the VA data; default 'WHO2012'
 ##' @param model VA algorithm used; at the moment supports 'InterVA' and "InSilicoVA"
@@ -401,18 +405,31 @@ recoverAnswers3=function(VA,block,method="OpenVA",data.type = "WHO2012",
 ##' ## Impute blocks of questions 18-20 and 21-24 and evaluate probbase for InterVA(used custom probbase and letter probabilities)
 ##' data("probbase")
 ##' probbase2<- probbase
-##' probbase2[,19]<-"A"
+##' probbase2[10,22]<-"A"
 ##' evaluateProbbase(RandomVA1[1:100,],blocks=list(18:20, 21:24),method="OpenVA",data.type = "WHO2012",
 ##' model = "InterVA",version = "4.03", HIV = "h", Malaria = "h",probBase = probbase2, letterProb = data.frame(
 ##' grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", 
 ##' "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),
 ##' value = c(1, 1, 0.7, 0.2, 0.9, 1, 0.02, 0.4,
 ##' 0.01, 0.005, 0, 0, 0.2, 0, 0.00001, 0, 0)))
+##' 
+##' 
+##' data("probbase")
+##' probbase2<- probbase
+##' probbase2[10,22]<-"A"
+##' evaluateProbbase(RandomVA1[1:10,],blocks=list(18:20, 21:24),method="OpenVA",data.type = "WHO2012",
+##' model = "InterVA",version = "4.03", HIV = "h", Malaria = "h",probBase = probbase2, letterProb = data.frame(
+##' grade = c("I", "A+", "A", "A-", "B+", "B", "B-", "B -", 
+##' "C+", "C", "C-", "D+", "D", "D-", "E", "N", ""),
+##' value = c(1, 1, 0.7, 0.2, 0.9, 1, 0.02, 0.4,
+##' 0.01, 0.005, 0, 0, 0.2, 0, 0.00001, 0, 0)), probbase_element =list(10,25) , epsilon = 0.4)
+
+
 
 
 
                  
-evaluateProbbase<-function(VA,blocks, method = "OpenVA",data.type = "WHO2012", model, CondProbNum=NULL, probBase=NULL, letterProb=NULL,
+evaluateProbbase<-function(VA,blocks, method = "OpenVA",data.type = "WHO2012", model, CondProbNum=NULL, probBase=NULL, letterProb=NULL, probbase_element=NULL, epsilon=NULL,
                                 version = NULL, HIV = NULL, Malaria = NULL){
   #For each block in list of block, run recover answers, extract imputed values where we removed a Yes
   #Once complete take mean of imputed values
@@ -425,7 +442,8 @@ evaluateProbbase<-function(VA,blocks, method = "OpenVA",data.type = "WHO2012", m
     if(model=="InterVA"){
       out=recoverAnswers3(VA,block,method=method,
                           data.type = data.type,model = model,
-                          version = version, HIV = HIV, Malaria = Malaria, probBase=probBase, letterProb=letterProb)
+                          version = version, HIV = HIV, Malaria = Malaria, probBase=probBase, letterProb=letterProb,
+                          probbase_element = probbase_element, epsilon = epsilon)
     }
     if(model=="InSilicoVA"){
       out=recoverAnswers2(VA,block,method=method,
@@ -444,6 +462,7 @@ evaluateProbbase<-function(VA,blocks, method = "OpenVA",data.type = "WHO2012", m
   }
   return(Accuracy=sum/count)
 }
+
 
 
 
