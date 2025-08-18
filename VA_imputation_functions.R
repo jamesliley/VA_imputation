@@ -218,6 +218,7 @@ recoverAnswers= function(VA,block,method="OpenVA",data.type = "WHO2012",
 ##' @examples
 ##' ## Impute block of questions 11-20
 ##' data(RandomVA1)
+##' data(condprobnum)
 ##' out=recoverAnswers2(RandomVA1,block=11:20,method="OpenVA",
 ##'                    data.type = "WHO2012",model = "InSilicoVA",
 ##'                    CondProbNum=condprobnum)
@@ -257,6 +258,7 @@ recoverAnswers2=function(VA,block,CondProbNum,method="OpenVA",data.type = "WHO20
     }
   return(list(Original=VA[,block],Imputed=imputed))
 }
+
 
 
 
