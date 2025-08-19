@@ -1543,18 +1543,32 @@ evaluateProbbase<-function(VA,blocks, method = "OpenVA",data.type = "WHO2012", m
                           data.type = data.type,model = model,
                           CondProbNum=CondProbNum)
     }
-    for (k in 1:length(out$Original[,1])) {
-      row<- out$Original[k,]
-      for (j in 1:length(out$Original)) {
-        if(row[j]=="Y"){
-          count<- count+1
-          sum<- sum + out$Imputed[k,j]
+    if(length(block) == 1){
+      for (k in 1:length(out$Imputed[,1])) {
+        row<- out$Original[k]
+        for (j in 1:length(out$Imputed[1,])) {
+          if(row[j]=="Y"){
+            count<- count+1
+            sum<- sum + out$Imputed[k]
+          }
         }
       }
     }
-  }
+    else{
+      for (k in 1:length(out$Original[,1])) {
+        row<- out$Original[k,]
+        for (j in 1:length(out$Original)) {
+          if(row[j]=="Y"){
+            count<- count+1
+            sum<- sum + out$Imputed[k,j]
+          }
+        }
+      }
+      }
   return(Accuracy=sum/count)
+  }
 }
+
 
 
 
