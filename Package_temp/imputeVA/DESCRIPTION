@@ -1,0 +1,20 @@
+Package: imputeVA
+Title: Calibrates probbases (marginal probability estimates) using VA data. 
+Version: 0.0.0.9000
+Authors@R: 
+  c(person(given = "Nathan",
+           family = "Higgins",
+           role = c("aut","cre"),
+           email = "nathan.higgins@durham.ac.uk"),
+    person(given = "James",
+           family = "Liley",
+           role = c("cre","aut"),
+           email = "james.liley@durham.ac.uk",
+           comment = c(ORCID = "0000-0002-0049-8238")))
+Description: A verbal autopsy is a standardised interview with the family of a deceased person. A verbal autopsy algorithm takes such an interview and gives likely causes of death, making use of a table (called a probbase) describing how likely it is that a person with a given cause of death would answer a question in a particular way. The construction of such probbases is difficult, and we propose a method to help by assessing how well a given probbase allows missing answers in a verbal autopsy questionnaire to be imputed. This description will be updated with a link to our manuscript in due course. 
+License: use_mit_license()
+Imports: openVA,mnormt
+Suggests: nbc4va
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2

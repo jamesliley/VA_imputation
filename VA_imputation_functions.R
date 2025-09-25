@@ -83,9 +83,6 @@ logistic=function(x) {
 ##' Using default probbase and letter probabilities
 ##' sample.output3 <- InterVA2(SampleInput, HIV = "h", Malaria = "l", write=FALSE,
 ##' replicates = FALSE, groupcode = TRUE, probBase=NULL, letterProb = NULL)
-
-
-
 InterVA2<-function (Input, HIV, Malaria, directory = NULL, filename = "VA_result", 
           output = "classic", append = FALSE, groupcode = FALSE, replicates = FALSE,probBase=NULL, letterProb=NULL,
           replicate.bug1 = FALSE, replicate.bug2 = FALSE, write = TRUE, 

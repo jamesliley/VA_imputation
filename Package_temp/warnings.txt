@@ -1,0 +1,597 @@
+Warning log built for InterVA 2025-09-24 13:55:25.444946 
+d1     comdel   value inconsistent with  elder  - cleared in working file 
+d1     move_lb   value inconsistent with  elder  - cleared in working file 
+d1     no_life   value inconsistent with  elder  - cleared in working file 
+d1     born_malf   value inconsistent with  elder  - cleared in working file 
+d1     smedic   not flagged in category  shospf  - updated in working file 
+d2     magegp1   value inconsistent with  elder  - cleared in working file 
+ magegp1   value inconsistent with  male  - cleared in working file 
+d2     ac_abdp   not flagged in category  abd_pain  - updated in working file 
+d2     pend_6w   value inconsistent with  male  - cleared in working file 
+ pend_6w   value inconsistent with  elder  - cleared in working file 
+d2     death_24   value inconsistent with  elder  - cleared in working file 
+ death_24   value inconsistent with  male  - cleared in working file 
+d2     abd_pain   not flagged in category  abdom  - updated in working file 
+d3     ch_cough   not flagged in category  cough  - updated in working file 
+d3     ch_diarr   not flagged in category  diarr  - updated in working file 
+d3     uri_ret   not flagged in category  urine  - updated in working file 
+d3     eye_sunk   value inconsistent with  elder  - cleared in working file 
+d3     vaccin   value inconsistent with  elder  - cleared in working file 
+d4     magegp1   value inconsistent with  male  - cleared in working file 
+d4     sk_feet   not flagged in category  skin  - updated in working file 
+d4     death_24   value inconsistent with  male  - cleared in working file 
+d4     del_fac   value inconsistent with  male  - cleared in working file 
+d4     del_else   value inconsistent with  male  - cleared in working file 
+d4     bleed   value inconsistent with  male  - cleared in working file 
+d4     e_bleed   value inconsistent with  male  - cleared in working file 
+d4     s_bleed   value inconsistent with  male  - cleared in working file 
+d4     p_bleed   value inconsistent with  male  - cleared in working file 
+d4     placent_r   value inconsistent with  male  - cleared in working file 
+d4     blood_tr   not flagged in category  treat  - updated in working file 
+d6     magegp1   value inconsistent with  male  - cleared in working file 
+d6     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d6     ac_fever   not flagged in category  fever  - updated in working file 
+d6     del_else   value inconsistent with  male  - cleared in working file 
+d6     disch_sm   value inconsistent with  male  - cleared in working file 
+d6     married   value inconsistent with  male  - cleared in working file 
+d7     del_cs   value inconsistent with  elder  - cleared in working file 
+ del_cs   value inconsistent with  male  - cleared in working file 
+d7     baby_pos   value inconsistent with  elder  - cleared in working file 
+ baby_pos   value inconsistent with  male  - cleared in working file 
+d7     t_ngt   not flagged in category  treat  - updated in working file 
+d8     magegp1   value inconsistent with  elder  - cleared in working file 
+ magegp1   value inconsistent with  male  - cleared in working file 
+ magegp1   value inconsistent with  magegp2  - cleared in working file 
+ magegp1   value inconsistent with  magegp3  - cleared in working file 
+d8     magegp2   value inconsistent with  elder  - cleared in working file 
+ magegp2   value inconsistent with  male  - cleared in working file 
+ magegp2   value inconsistent with  magegp3  - cleared in working file 
+d8     magegp3   value inconsistent with  elder  - cleared in working file 
+ magegp3   value inconsistent with  male  - cleared in working file 
+d8     abd_pain   not flagged in category  abdom  - updated in working file 
+d8     first_p   value inconsistent with  elder  - cleared in working file 
+ first_p   value inconsistent with  male  - cleared in working file 
+d8     death_24   value inconsistent with  elder  - cleared in working file 
+ death_24   value inconsistent with  male  - cleared in working file 
+d8     antib_i   not flagged in category  treat  - updated in working file 
+d10     magegp3   value inconsistent with  elder  - cleared in working file 
+ magegp3   value inconsistent with  male  - cleared in working file 
+d11     del_6wks   value inconsistent with  male  - cleared in working file 
+ del_6wks   value inconsistent with  midage  - cleared in working file 
+d11     baby_al   value inconsistent with  midage  - cleared in working file 
+ baby_al   value inconsistent with  male  - cleared in working file 
+d11     bleed   value inconsistent with  midage  - cleared in working file 
+ bleed   value inconsistent with  male  - cleared in working file 
+d11     p_bleed   value inconsistent with  midage  - cleared in working file 
+ p_bleed   value inconsistent with  male  - cleared in working file 
+d11     married   value inconsistent with  midage  - cleared in working file 
+ married   value inconsistent with  male  - cleared in working file 
+d11     blood_tr   not flagged in category  treat  - updated in working file 
+d12     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d12     ch_fever   not flagged in category  fever  - updated in working file 
+d12     whoop   value inconsistent with  elder  - cleared in working file 
+d12     not_preg   value inconsistent with  elder  - cleared in working file 
+d12     strans   not flagged in category  shospf  - updated in working file 
+d13     died_d1   value inconsistent with  died_w1  - cleared in working file 
+ died_d1   value inconsistent with  midage  - cleared in working file 
+d13     died_w1   value inconsistent with  midage  - cleared in working file 
+d13     mencon3   not flagged in category  men_con  - updated in working file 
+d13     pe_diarr   not flagged in category  diarr  - updated in working file 
+d13     bl_vomit   not flagged in category  vomiting  - updated in working file 
+d13     del_6wks   value inconsistent with  male  - cleared in working file 
+ del_6wks   value inconsistent with  midage  - cleared in working file 
+d13     font_hi   value inconsistent with  midage  - cleared in working file 
+d13     married   value inconsistent with  midage  - cleared in working file 
+ married   value inconsistent with  male  - cleared in working file 
+d13     sur_1m   not flagged in category  surgery  - updated in working file 
+d13     surgery   not flagged in category  treat  - updated in working file 
+d14     ch_fever   not flagged in category  fever  - updated in working file 
+d14     ac_cough   value inconsistent with  ch_cough  - cleared in working file 
+d14     whoop   value inconsistent with  adult  - cleared in working file 
+d14     abd_pain   not flagged in category  abdom  - updated in working file 
+d14     t_ngt   not flagged in category  treat  - updated in working file 
+d15     ac_cough   value inconsistent with  ch_cough  - cleared in working file 
+d15     ch_cough   not flagged in category  cough  - updated in working file 
+d15     ch_swab   not flagged in category  swe_abd  - updated in working file 
+d15     vaccin   value inconsistent with  midage  - cleared in working file 
+d15     swe_abd   not flagged in category  abdom  - updated in working file 
+d17     magegp2   value inconsistent with  elder  - cleared in working file 
+ magegp2   value inconsistent with  male  - cleared in working file 
+ magegp2   value inconsistent with  magegp3  - cleared in working file 
+d17     magegp3   value inconsistent with  elder  - cleared in working file 
+ magegp3   value inconsistent with  male  - cleared in working file 
+d17     ac_fever   not flagged in category  fever  - updated in working file 
+d17     del_home   value inconsistent with  elder  - cleared in working file 
+ del_home   value inconsistent with  male  - cleared in working file 
+d17     del_else   value inconsistent with  elder  - cleared in working file 
+ del_else   value inconsistent with  male  - cleared in working file 
+d17     disch_sm   value inconsistent with  elder  - cleared in working file 
+ disch_sm   value inconsistent with  male  - cleared in working file 
+d17     antib_i   not flagged in category  treat  - updated in working file 
+d18     ac_cough   not flagged in category  cough  - updated in working file 
+d18     del_home   value inconsistent with  midage  - cleared in working file 
+ del_home   value inconsistent with  male  - cleared in working file 
+d18     vaccin   value inconsistent with  midage  - cleared in working file 
+d19     co_ons   not flagged in category  coma  - updated in working file 
+d19     ch_conv   not flagged in category  convul  - updated in working file 
+d20     ac_abdp   value inconsistent with  ch_abdp  - cleared in working file 
+d21     co_ons   not flagged in category  coma  - updated in working file 
+d21     t_ngt   not flagged in category  treat  - updated in working file 
+d22     ch_conv   not flagged in category  convul  - updated in working file 
+d22     swe_neck   not flagged in category  swell  - updated in working file 
+d22     born_big   value inconsistent with  adult  - cleared in working file 
+d22     cord   value inconsistent with  adult  - cleared in working file 
+d22     traffic   not flagged in category  injury  - updated in working file 
+d23     del_fac   value inconsistent with  not_preg  - cleared in working file 
+d23     vaccin   value inconsistent with  adult  - cleared in working file 
+d23     sadmit   not flagged in category  shospf  - updated in working file 
+d24     bl_cough   not flagged in category  cough  - updated in working file 
+d25     magegp2   value inconsistent with  elder  - cleared in working file 
+d25     abd_pain   not flagged in category  abdom  - updated in working file 
+d25     pend_6w   value inconsistent with  elder  - cleared in working file 
+d25     married   value inconsistent with  elder  - cleared in working file 
+d25     antib_i   not flagged in category  treat  - updated in working file 
+d26     magegp2   value inconsistent with  male  - cleared in working file 
+d26     ac_fever   not flagged in category  fever  - updated in working file 
+d26     death_24   value inconsistent with  male  - cleared in working file 
+d26     t_iv   not flagged in category  treat  - updated in working file 
+d27     died_d1   value inconsistent with  adult  - cleared in working file 
+d27     ac_rpbr   not flagged in category  rapid_br  - updated in working file 
+d27     ch_abdp   not flagged in category  abd_pain  - updated in working file 
+d27     lab_24   value inconsistent with  male  - cleared in working file 
+d27     breast_fd   value inconsistent with  male  - cleared in working file 
+d27     del_ass   value inconsistent with  male  - cleared in working file 
+d27     baby_pos   value inconsistent with  male  - cleared in working file 
+d27     placent_r   value inconsistent with  male  - cleared in working file 
+d27     born_nobr   value inconsistent with  adult  - cleared in working file 
+d27     drown   not flagged in category  injury  - updated in working file 
+d27     surgery   not flagged in category  treat  - updated in working file 
+d27     smedic   not flagged in category  shospf  - updated in working file 
+d27     rapid_br   not flagged in category  breath  - updated in working file 
+d27     abd_pain   not flagged in category  abdom  - updated in working file 
+d28     rapid_br   not flagged in category  breath  - updated in working file 
+d28     wasting   not flagged in category  wt_loss  - updated in working file 
+d28     swe_breast   value inconsistent with  male  - cleared in working file 
+d28     not_preg   value inconsistent with  male  - cleared in working file 
+ not_preg   value inconsistent with  elder  - cleared in working file 
+d28     vaccin   value inconsistent with  elder  - cleared in working file 
+d28     disch   not flagged in category  treat  - updated in working file 
+d29     bl_cough   not flagged in category  cough  - updated in working file 
+d29     chest_in   value inconsistent with  elder  - cleared in working file 
+d29     ac_diarr   not flagged in category  diarr  - updated in working file 
+d29     unc_con   not flagged in category  convul  - updated in working file 
+d29     e_bleed   value inconsistent with  elder  - cleared in working file 
+d29     comdel   value inconsistent with  elder  - cleared in working file 
+d29     cord   value inconsistent with  elder  - cleared in working file 
+d29     married   value inconsistent with  elder  - cleared in working file 
+d29     disch   not flagged in category  treat  - updated in working file 
+d29     sadmit   not flagged in category  shospf  - updated in working file 
+d30     ac_fever   not flagged in category  fever  - updated in working file 
+d30     vaccin   value inconsistent with  elder  - cleared in working file 
+d30     sadmit   not flagged in category  shospf  - updated in working file 
+d31     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d31     br_less   not flagged in category  breath  - updated in working file 
+d31     not_preg   value inconsistent with  elder  - cleared in working file 
+d31     strans   not flagged in category  shospf  - updated in working file 
+d32     magegp2   value inconsistent with  elder  - cleared in working file 
+ magegp2   value inconsistent with  male  - cleared in working file 
+d32     died_lab   value inconsistent with  elder  - cleared in working file 
+ died_lab   value inconsistent with  male  - cleared in working file 
+d32     baby_al   value inconsistent with  elder  - cleared in working file 
+ baby_al   value inconsistent with  male  - cleared in working file 
+d32     bleed   value inconsistent with  elder  - cleared in working file 
+ bleed   value inconsistent with  male  - cleared in working file 
+d32     s_bleed   value inconsistent with  elder  - cleared in working file 
+ s_bleed   value inconsistent with  male  - cleared in working file 
+d32     p_bleed   value inconsistent with  elder  - cleared in working file 
+ p_bleed   value inconsistent with  male  - cleared in working file 
+d32     blood_tr   not flagged in category  treat  - updated in working file 
+d33     whoop   value inconsistent with  midage  - cleared in working file 
+d33     unc_con   not flagged in category  convul  - updated in working file 
+d34     ac_rpbr   not flagged in category  rapid_br  - updated in working file 
+d34     uri_ret   not flagged in category  urine  - updated in working file 
+d34     mttv   value inconsistent with  adult  - cleared in working file 
+d34     b_bfac   value inconsistent with  adult  - cleared in working file 
+d34     rapid_br   not flagged in category  breath  - updated in working file 
+d35     ch_abdp   not flagged in category  abd_pain  - updated in working file 
+d35     vaccin   value inconsistent with  elder  - cleared in working file 
+d36     ac_cough   not flagged in category  cough  - updated in working file 
+d36     uri_haem   not flagged in category  urine  - updated in working file 
+d36     vaccin   value inconsistent with  adult  - cleared in working file 
+d37     magegp2   value inconsistent with  elder  - cleared in working file 
+d37     died_lab   value inconsistent with  elder  - cleared in working file 
+d37     baby_al   value inconsistent with  elder  - cleared in working file 
+d37     del_home   value inconsistent with  elder  - cleared in working file 
+d37     s_bleed   value inconsistent with  elder  - cleared in working file 
+d37     blood_tr   not flagged in category  treat  - updated in working file 
+d38     ch_fever   not flagged in category  fever  - updated in working file 
+d38     ac_cough   not flagged in category  cough  - updated in working file 
+d38     ac_rpbr   not flagged in category  rapid_br  - updated in working file 
+d38     ch_diarr   not flagged in category  diarr  - updated in working file 
+d38     rapid_br   not flagged in category  breath  - updated in working file 
+d40     died_d36   value inconsistent with  adult  - cleared in working file 
+d40     ac_diarr   not flagged in category  diarr  - updated in working file 
+d40     st_suck   value inconsistent with  adult  - cleared in working file 
+d40     vaccin   value inconsistent with  adult  - cleared in working file 
+d41     mon_early   value inconsistent with  midage  - cleared in working file 
+ mon_early   value inconsistent with  not_preg  - cleared in working file 
+d42     ac_abdp   not flagged in category  abd_pain  - updated in working file 
+d42     vaccin   value inconsistent with  midage  - cleared in working file 
+d43     magegp3   value inconsistent with  male  - cleared in working file 
+d43     died_lab   value inconsistent with  male  - cleared in working file 
+d43     s_bleed   value inconsistent with  male  - cleared in working file 
+d43     p_bleed   value inconsistent with  male  - cleared in working file 
+d43     blood_tr   not flagged in category  treat  - updated in working file 
+d43     streat   not flagged in category  shospf  - updated in working file 
+d44     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d44     died_lab   value inconsistent with  not_preg  - cleared in working file 
+d44     sadmit   not flagged in category  shospf  - updated in working file 
+d45     ch_diarr   not flagged in category  diarr  - updated in working file 
+d45     wasting   not flagged in category  wt_loss  - updated in working file 
+d45     not_preg   value inconsistent with  elder  - cleared in working file 
+d45     vaccin   value inconsistent with  elder  - cleared in working file 
+d46     whoop   value inconsistent with  midage  - cleared in working file 
+d46     baby_pos   value inconsistent with  midage  - cleared in working file 
+ baby_pos   value inconsistent with  not_preg  - cleared in working file 
+d47     ac_fever   not flagged in category  fever  - updated in working file 
+d47     ac_abdp   not flagged in category  abd_pain  - updated in working file 
+d47     abd_pain   not flagged in category  abdom  - updated in working file 
+d48     magegp3   value inconsistent with  midage  - cleared in working file 
+ magegp3   value inconsistent with  male  - cleared in working file 
+d48     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d48     died_lab   value inconsistent with  midage  - cleared in working file 
+ died_lab   value inconsistent with  male  - cleared in working file 
+d48     del_else   value inconsistent with  midage  - cleared in working file 
+ del_else   value inconsistent with  male  - cleared in working file 
+d48     bleed   value inconsistent with  midage  - cleared in working file 
+ bleed   value inconsistent with  male  - cleared in working file 
+d48     s_bleed   value inconsistent with  midage  - cleared in working file 
+ s_bleed   value inconsistent with  male  - cleared in working file 
+d48     married   value inconsistent with  midage  - cleared in working file 
+ married   value inconsistent with  male  - cleared in working file 
+d48     blood_tr   not flagged in category  treat  - updated in working file 
+d49     ac_rpbr   not flagged in category  rapid_br  - updated in working file 
+d49     abd_pain   not flagged in category  abdom  - updated in working file 
+d49     ch_stnk   not flagged in category  stiff_neck  - updated in working file 
+d49     swe_armp   not flagged in category  swell  - updated in working file 
+d49     multip   value inconsistent with  midage  - cleared in working file 
+d49     del_ass   value inconsistent with  midage  - cleared in working file 
+d49     fit_preg   value inconsistent with  midage  - cleared in working file 
+d49     cyanosis   value inconsistent with  midage  - cleared in working file 
+d49     devel   value inconsistent with  midage  - cleared in working file 
+d49     b_assist   value inconsistent with  midage  - cleared in working file 
+d49     disch   not flagged in category  treat  - updated in working file 
+d49     rapid_br   not flagged in category  breath  - updated in working file 
+d50     co_ons   not flagged in category  coma  - updated in working file 
+d50     pregnant   value inconsistent with  midage  - cleared in working file 
+d51     born_malf   value inconsistent with  midage  - cleared in working file 
+d52     bl_vomit   not flagged in category  vomiting  - updated in working file 
+d52     ac_abdp   not flagged in category  abd_pain  - updated in working file 
+d52     uri_haem   not flagged in category  urine  - updated in working file 
+d52     not_preg   value inconsistent with  elder  - cleared in working file 
+d52     vaccin   value inconsistent with  elder  - cleared in working file 
+d52     blood_tr   not flagged in category  treat  - updated in working file 
+d52     abd_pain   not flagged in category  abdom  - updated in working file 
+d54     baby_al   value inconsistent with  midage  - cleared in working file 
+ baby_al   value inconsistent with  male  - cleared in working file 
+d54     t_ngt   not flagged in category  treat  - updated in working file 
+d54     sadmit   not flagged in category  shospf  - updated in working file 
+d55     ch_fever   not flagged in category  fever  - updated in working file 
+d55     whoop   value inconsistent with  adult  - cleared in working file 
+d55     eye_sunk   value inconsistent with  adult  - cleared in working file 
+d55     not_preg   value inconsistent with  male  - cleared in working file 
+d55     antib_i   not flagged in category  treat  - updated in working file 
+d56     ac_fever   not flagged in category  fever  - updated in working file 
+d56     not_preg   value inconsistent with  male  - cleared in working file 
+ not_preg   value inconsistent with  elder  - cleared in working file 
+d57     vb_bet   value inconsistent with  elder  - cleared in working file 
+d57     not_preg   value inconsistent with  elder  - cleared in working file 
+d57     vaccin   value inconsistent with  elder  - cleared in working file 
+d57     disch   not flagged in category  treat  - updated in working file 
+d58     vb_bet   value inconsistent with  elder  - cleared in working file 
+d58     not_preg   value inconsistent with  elder  - cleared in working file 
+d59     rapid_br   not flagged in category  breath  - updated in working file 
+d59     st_suck   value inconsistent with  midage  - cleared in working file 
+d60     ac_cough   not flagged in category  cough  - updated in working file 
+d60     multip   value inconsistent with  male  - cleared in working file 
+d61     pend_6w   value inconsistent with  del_6wks  - cleared in working file 
+d61     del_norm   value inconsistent with  del_ass  - cleared in working file 
+d61     vaccin   value inconsistent with  adult  - cleared in working file 
+d62     del_cs   value inconsistent with  elder  - cleared in working file 
+ del_cs   value inconsistent with  male  - cleared in working file 
+d62     vaccin   value inconsistent with  elder  - cleared in working file 
+d62     t_ngt   not flagged in category  treat  - updated in working file 
+d63     ac_abdp   not flagged in category  abd_pain  - updated in working file 
+d63     antib_i   not flagged in category  treat  - updated in working file 
+d64     ac_cough   not flagged in category  cough  - updated in working file 
+d64     co_ons   not flagged in category  coma  - updated in working file 
+d64     vis_bl   value inconsistent with  midage  - cleared in working file 
+d64     vaccin   value inconsistent with  midage  - cleared in working file 
+d65     mencon3   not flagged in category  men_con  - updated in working file 
+d65     blood_tr   not flagged in category  treat  - updated in working file 
+d66     abd_pain   not flagged in category  abdom  - updated in working file 
+d66     vaccin   value inconsistent with  adult  - cleared in working file 
+d67     rash   not flagged in category  skin  - updated in working file 
+d67     not_preg   value inconsistent with  elder  - cleared in working file 
+d67     conv_d2   value inconsistent with  elder  - cleared in working file 
+d68     measles   value inconsistent with  midage  - cleared in working file 
+d68     ac_fever   not flagged in category  fever  - updated in working file 
+d68     rapid_br   not flagged in category  breath  - updated in working file 
+d68     abd_pain   not flagged in category  abdom  - updated in working file 
+d69     ac_fever   not flagged in category  fever  - updated in working file 
+d69     exc_urine   not flagged in category  urine  - updated in working file 
+d69     not_preg   value inconsistent with  male  - cleared in working file 
+ not_preg   value inconsistent with  elder  - cleared in working file 
+d70     magegp3   value inconsistent with  male  - cleared in working file 
+d70     rapid_br   not flagged in category  breath  - updated in working file 
+d70     swe_neck   not flagged in category  swell  - updated in working file 
+d70     vb_after   value inconsistent with  male  - cleared in working file 
+d70     cried   value inconsistent with  adult  - cleared in working file 
+d70     b_msmds   value inconsistent with  adult  - cleared in working file 
+d70     b_bfac   value inconsistent with  adult  - cleared in working file 
+d70     inflict   not flagged in category  injury  - updated in working file 
+d71     magegp2   value inconsistent with  elder  - cleared in working file 
+ magegp2   value inconsistent with  male  - cleared in working file 
+d71     ac_fever   not flagged in category  fever  - updated in working file 
+d71     abd_pain   not flagged in category  abdom  - updated in working file 
+d71     pend_6w   value inconsistent with  male  - cleared in working file 
+ pend_6w   value inconsistent with  elder  - cleared in working file 
+d71     blood_tr   not flagged in category  treat  - updated in working file 
+d72     ac_cough   not flagged in category  cough  - updated in working file 
+d72     ac_rpbr   not flagged in category  rapid_br  - updated in working file 
+d72     exert_br   not flagged in category  br_less  - updated in working file 
+d72     sadmit   not flagged in category  shospf  - updated in working file 
+d73     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d73     more4   value inconsistent with  elder  - cleared in working file 
+ more4   value inconsistent with  male  - cleared in working file 
+d73     del_fac   value inconsistent with  elder  - cleared in working file 
+ del_fac   value inconsistent with  male  - cleared in working file 
+d73     del_else   value inconsistent with  elder  - cleared in working file 
+ del_else   value inconsistent with  male  - cleared in working file 
+d73     antib_i   not flagged in category  treat  - updated in working file 
+d74     ac_diarr   not flagged in category  diarr  - updated in working file 
+d74     born_3437   value inconsistent with  adult  - cleared in working file 
+ born_3437   value inconsistent with  born_38  - cleared in working file 
+d74     born_38   value inconsistent with  adult  - cleared in working file 
+d74     cord   value inconsistent with  adult  - cleared in working file 
+d74     b_bfac   value inconsistent with  adult  - cleared in working file 
+d74     assault   not flagged in category  injury  - updated in working file 
+d74     streat   not flagged in category  shospf  - updated in working file 
+d75     pe_diarr   not flagged in category  diarr  - updated in working file 
+d76     vaccin   value inconsistent with  elder  - cleared in working file 
+d76     surgery   not flagged in category  treat  - updated in working file 
+d77     not_preg   value inconsistent with  elder  - cleared in working file 
+d78     magegp1   value inconsistent with  elder  - cleared in working file 
+ magegp1   value inconsistent with  male  - cleared in working file 
+ magegp1   value inconsistent with  magegp2  - cleared in working file 
+ magegp1   value inconsistent with  magegp3  - cleared in working file 
+d78     magegp2   value inconsistent with  elder  - cleared in working file 
+ magegp2   value inconsistent with  male  - cleared in working file 
+ magegp2   value inconsistent with  magegp3  - cleared in working file 
+d78     magegp3   value inconsistent with  elder  - cleared in working file 
+ magegp3   value inconsistent with  male  - cleared in working file 
+d78     pregnant   value inconsistent with  male  - cleared in working file 
+ pregnant   value inconsistent with  elder  - cleared in working file 
+d78     del_6wks   value inconsistent with  male  - cleared in working file 
+ del_6wks   value inconsistent with  elder  - cleared in working file 
+d78     baby_al   value inconsistent with  elder  - cleared in working file 
+ baby_al   value inconsistent with  male  - cleared in working file 
+d78     e_bleed   value inconsistent with  elder  - cleared in working file 
+ e_bleed   value inconsistent with  male  - cleared in working file 
+d78     p_bleed   value inconsistent with  elder  - cleared in working file 
+ p_bleed   value inconsistent with  male  - cleared in working file 
+d78     blood_tr   not flagged in category  treat  - updated in working file 
+d79     ac_fever   not flagged in category  fever  - updated in working file 
+d79     antib_i   not flagged in category  treat  - updated in working file 
+d80     ac_brl   not flagged in category  br_less  - updated in working file 
+d80     ac_diarr   not flagged in category  diarr  - updated in working file 
+d80     ch_abdp   not flagged in category  abd_pain  - updated in working file 
+d80     ch_abdm   not flagged in category  abd_mass  - updated in working file 
+d80     swe_neck   not flagged in category  swell  - updated in working file 
+d80     vaccin   value inconsistent with  adult  - cleared in working file 
+d80     br_less   not flagged in category  breath  - updated in working file 
+d81     died_d36   value inconsistent with  adult  - cleared in working file 
+d81     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d81     rapid_br   not flagged in category  breath  - updated in working file 
+d81     chest_in   value inconsistent with  adult  - cleared in working file 
+d81     vaccin   value inconsistent with  adult  - cleared in working file 
+d82     acute   value inconsistent with  chronic  - cleared in working file 
+d82     ac_fever   value inconsistent with  ch_fever  - cleared in working file 
+d82     ch_fever   not flagged in category  fever  - updated in working file 
+d82     ac_cough   not flagged in category  cough  - updated in working file 
+d82     abd_pain   not flagged in category  abdom  - updated in working file 
+d82     del_6wks   value inconsistent with  midage  - cleared in working file 
+d82     death_24   value inconsistent with  midage  - cleared in working file 
+d82     baby_al   value inconsistent with  midage  - cleared in working file 
+d82     del_norm   value inconsistent with  midage  - cleared in working file 
+d82     del_cs   value inconsistent with  midage  - cleared in working file 
+d82     baby_pos   value inconsistent with  midage  - cleared in working file 
+d82     married   value inconsistent with  midage  - cleared in working file 
+d83     ac_swab   not flagged in category  swe_abd  - updated in working file 
+d83     vaccin   value inconsistent with  adult  - cleared in working file 
+d84     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d84     ac_abdp   not flagged in category  abd_pain  - updated in working file 
+d84     not_preg   value inconsistent with  male  - cleared in working file 
+d84     abd_pain   not flagged in category  abdom  - updated in working file 
+d85     rash   not flagged in category  skin  - updated in working file 
+d85     uri_haem   not flagged in category  urine  - updated in working file 
+d85     not_preg   value inconsistent with  elder  - cleared in working file 
+d85     vaccin   value inconsistent with  elder  - cleared in working file 
+d85     t_iv   not flagged in category  treat  - updated in working file 
+d85     smedic   not flagged in category  shospf  - updated in working file 
+d86     ac_diarr   value inconsistent with  ch_diarr  - cleared in working file 
+d86     ch_abdp   not flagged in category  abd_pain  - updated in working file 
+d86     ch_swab   not flagged in category  swe_abd  - updated in working file 
+d86     not_preg   value inconsistent with  male  - cleared in working file 
+d86     surgery   not flagged in category  treat  - updated in working file 
+d87     ac_fever   not flagged in category  fever  - updated in working file 
+d87     bl_diarr   not flagged in category  diarr  - updated in working file 
+d87     eye_sunk   value inconsistent with  elder  - cleared in working file 
+d87     not_preg   value inconsistent with  elder  - cleared in working file 
+d87     streat   not flagged in category  shospf  - updated in working file 
+d88     magegp1   value inconsistent with  elder  - cleared in working file 
+ magegp1   value inconsistent with  male  - cleared in working file 
+ magegp1   value inconsistent with  magegp2  - cleared in working file 
+ magegp1   value inconsistent with  magegp3  - cleared in working file 
+d88     magegp2   value inconsistent with  elder  - cleared in working file 
+ magegp2   value inconsistent with  male  - cleared in working file 
+ magegp2   value inconsistent with  magegp3  - cleared in working file 
+d88     magegp3   value inconsistent with  elder  - cleared in working file 
+ magegp3   value inconsistent with  male  - cleared in working file 
+d88     pregnant   value inconsistent with  male  - cleared in working file 
+ pregnant   value inconsistent with  elder  - cleared in working file 
+d88     del_6wks   value inconsistent with  male  - cleared in working file 
+ del_6wks   value inconsistent with  elder  - cleared in working file 
+d88     died_lab   value inconsistent with  elder  - cleared in working file 
+ died_lab   value inconsistent with  male  - cleared in working file 
+d88     death_24   value inconsistent with  elder  - cleared in working file 
+ death_24   value inconsistent with  male  - cleared in working file 
+d88     bpr_preg   value inconsistent with  elder  - cleared in working file 
+ bpr_preg   value inconsistent with  male  - cleared in working file 
+d88     vis_bl   value inconsistent with  elder  - cleared in working file 
+ vis_bl   value inconsistent with  male  - cleared in working file 
+d88     bleed   value inconsistent with  elder  - cleared in working file 
+ bleed   value inconsistent with  male  - cleared in working file 
+d88     s_bleed   value inconsistent with  elder  - cleared in working file 
+ s_bleed   value inconsistent with  male  - cleared in working file 
+d88     d_bleed   value inconsistent with  elder  - cleared in working file 
+ d_bleed   value inconsistent with  male  - cleared in working file 
+d88     blood_tr   not flagged in category  treat  - updated in working file 
+d89     vaccin   value inconsistent with  midage  - cleared in working file 
+d90     ch_fever   not flagged in category  fever  - updated in working file 
+d90     whoop   value inconsistent with  midage  - cleared in working file 
+d90     ch_rpbr   not flagged in category  rapid_br  - updated in working file 
+d90     antib_i   not flagged in category  treat  - updated in working file 
+d91     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d91     ch_fever   not flagged in category  fever  - updated in working file 
+d91     whoop   value inconsistent with  midage  - cleared in working file 
+d91     streat   not flagged in category  shospf  - updated in working file 
+d92     ac_brl   not flagged in category  br_less  - updated in working file 
+d92     not_preg   value inconsistent with  male  - cleared in working file 
+d92     br_less   not flagged in category  breath  - updated in working file 
+d93     vaccin   value inconsistent with  elder  - cleared in working file 
+d94     ac_brl   not flagged in category  br_less  - updated in working file 
+d94     cord   value inconsistent with  midage  - cleared in working file 
+d94     cyanosis   value inconsistent with  midage  - cleared in working file 
+d94     born_nobr   value inconsistent with  midage  - cleared in working file 
+d94     vaccin   value inconsistent with  midage  - cleared in working file 
+d95     cord   value inconsistent with  adult  - cleared in working file 
+d95     cyanosis   value inconsistent with  adult  - cleared in working file 
+d95     born_nobr   value inconsistent with  adult  - cleared in working file 
+d95     born_malf   value inconsistent with  adult  - cleared in working file 
+d95     vaccin   value inconsistent with  adult  - cleared in working file 
+d95     sadmit   not flagged in category  shospf  - updated in working file 
+d96     ch_cough   not flagged in category  cough  - updated in working file 
+d96     del_6wks   value inconsistent with  elder  - cleared in working file 
+d96     pend_6w   value inconsistent with  elder  - cleared in working file 
+d96     death_24   value inconsistent with  elder  - cleared in working file 
+d96     del_home   value inconsistent with  elder  - cleared in working file 
+d96     prof_ass   value inconsistent with  elder  - cleared in working file 
+d96     del_norm   value inconsistent with  elder  - cleared in working file 
+d96     disch_sm   value inconsistent with  elder  - cleared in working file 
+d96     vaccin   value inconsistent with  elder  - cleared in working file 
+d97     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d97     ch_swab   not flagged in category  swe_abd  - updated in working file 
+d97     vb_after   value inconsistent with  male  - cleared in working file 
+d97     not_preg   value inconsistent with  male  - cleared in working file 
+d97     strans   not flagged in category  shospf  - updated in working file 
+d98     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d98     vaccin   value inconsistent with  midage  - cleared in working file 
+d99     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d99     ch_fever   not flagged in category  fever  - updated in working file 
+d99     whoop   value inconsistent with  elder  - cleared in working file 
+d99     not_preg   value inconsistent with  elder  - cleared in working file 
+d100     magegp1   value inconsistent with  elder  - cleared in working file 
+d100     lab_24   value inconsistent with  elder  - cleared in working file 
+d100     antib_i   not flagged in category  treat  - updated in working file 
+d101     abd_pain   not flagged in category  abdom  - updated in working file 
+d101     ch_conv   not flagged in category  convul  - updated in working file 
+d101     eye_sunk   value inconsistent with  adult  - cleared in working file 
+d101     sadmit   not flagged in category  shospf  - updated in working file 
+d102     magegp1   value inconsistent with  magegp2  - cleared in working file 
+d102     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d102     ac_rpbr   not flagged in category  rapid_br  - updated in working file 
+d102     ch_abdp   not flagged in category  abd_pain  - updated in working file 
+d102     pend_6w   value inconsistent with  del_6wks  - cleared in working file 
+d102     del_fac   value inconsistent with  del_home  - cleared in working file 
+d102     del_norm   value inconsistent with  del_ass  - cleared in working file 
+d102     rapid_br   not flagged in category  breath  - updated in working file 
+d102     abd_pain   not flagged in category  abdom  - updated in working file 
+d103     not_preg   value inconsistent with  male  - cleared in working file 
+d104     magegp3   value inconsistent with  midage  - cleared in working file 
+ magegp3   value inconsistent with  male  - cleared in working file 
+d104     ac_abdm   value inconsistent with  ch_abdm  - cleared in working file 
+d104     vb_bet   value inconsistent with  male  - cleared in working file 
+ vb_bet   value inconsistent with  midage  - cleared in working file 
+d104     vb_after   value inconsistent with  male  - cleared in working file 
+d104     not_preg   value inconsistent with  male  - cleared in working file 
+d104     baby_al   value inconsistent with  midage  - cleared in working file 
+ baby_al   value inconsistent with  male  - cleared in working file 
+d105     rash   not flagged in category  skin  - updated in working file 
+d105     ch_conv   not flagged in category  convul  - updated in working file 
+d105     not_preg   value inconsistent with  elder  - cleared in working file 
+d105     font_hi   value inconsistent with  elder  - cleared in working file 
+d106     not_preg   value inconsistent with  male  - cleared in working file 
+d106     fit_preg   value inconsistent with  male  - cleared in working file 
+d107     ac_rpbr   not flagged in category  rapid_br  - updated in working file 
+d107     eye_sunk   value inconsistent with  adult  - cleared in working file 
+d107     not_preg   value inconsistent with  male  - cleared in working file 
+d107     streat   not flagged in category  shospf  - updated in working file 
+d107     rapid_br   not flagged in category  breath  - updated in working file 
+d108     ac_fever   not flagged in category  fever  - updated in working file 
+d108     ch_abdp   not flagged in category  abd_pain  - updated in working file 
+d108     vaccin   value inconsistent with  elder  - cleared in working file 
+d108     t_ort   not flagged in category  treat  - updated in working file 
+d108     abd_pain   not flagged in category  abdom  - updated in working file 
+d109     magegp2   value inconsistent with  elder  - cleared in working file 
+ magegp2   value inconsistent with  male  - cleared in working file 
+d109     ac_fever   not flagged in category  fever  - updated in working file 
+d109     pregnant   value inconsistent with  male  - cleared in working file 
+ pregnant   value inconsistent with  elder  - cleared in working file 
+d109     pend_6w   value inconsistent with  male  - cleared in working file 
+ pend_6w   value inconsistent with  elder  - cleared in working file 
+d109     del_home   value inconsistent with  elder  - cleared in working file 
+ del_home   value inconsistent with  male  - cleared in working file 
+d109     del_else   value inconsistent with  elder  - cleared in working file 
+ del_else   value inconsistent with  male  - cleared in working file 
+d109     disch_sm   value inconsistent with  elder  - cleared in working file 
+ disch_sm   value inconsistent with  male  - cleared in working file 
+d109     antib_i   not flagged in category  treat  - updated in working file 
+d110     magegp3   value inconsistent with  elder  - cleared in working file 
+ magegp3   value inconsistent with  male  - cleared in working file 
+d110     wet_seas   value inconsistent with  dry_seas  - cleared in working file 
+d110     died_lab   value inconsistent with  elder  - cleared in working file 
+ died_lab   value inconsistent with  male  - cleared in working file 
+d110     bpr_preg   value inconsistent with  elder  - cleared in working file 
+ bpr_preg   value inconsistent with  male  - cleared in working file 
+d110     fit_preg   value inconsistent with  elder  - cleared in working file 
+ fit_preg   value inconsistent with  male  - cleared in working file 
+d110     vis_bl   value inconsistent with  elder  - cleared in working file 
+ vis_bl   value inconsistent with  male  - cleared in working file 
+d111     magegp1   value inconsistent with  elder  - cleared in working file 
+ magegp1   value inconsistent with  magegp3  - cleared in working file 
+d111     magegp3   value inconsistent with  elder  - cleared in working file 
+d111     ac_abdp   not flagged in category  abd_pain  - updated in working file 
+d111     pregnant   value inconsistent with  elder  - cleared in working file 
+d111     pend_6w   value inconsistent with  elder  - cleared in working file 
+d111     del_else   value inconsistent with  elder  - cleared in working file 
+d111     abd_pain   not flagged in category  abdom  - updated in working file 
+d112     chest_in   value inconsistent with  elder  - cleared in working file 
+d112     ac_diarr   value inconsistent with  pe_diarr  - cleared in working file 
+d112     pe_diarr   not flagged in category  diarr  - updated in working file 
+d112     swe_abd   not flagged in category  abdom  - updated in working file 
+d112     co_ons   not flagged in category  coma  - updated in working file 
+d112     d_bleed   value inconsistent with  elder  - cleared in working file 
+d112     b_bhome   value inconsistent with  elder  - cleared in working file 
+d112     b_bprof   value inconsistent with  elder  - cleared in working file 
+d112     fall   value inconsistent with  fire  - cleared in working file 
+d112     fire   not flagged in category  injury  - updated in working file 
+d112     antib_i   not flagged in category  treat  - updated in working file 
+d113     ac_rpbr   not flagged in category  rapid_br  - updated in working file 
+d113     measrash   not flagged in category  skin  - updated in working file 
+d113     not_preg   value inconsistent with  male  - cleared in working file 
+ not_preg   value inconsistent with  elder  - cleared in working file 
+d113     t_iv   not flagged in category  treat  - updated in working file 
+d114     ac_rpbr   not flagged in category  rapid_br  - updated in working file 
+d114     t_ngt   not flagged in category  treat  - updated in working file 
+d114     rapid_br   not flagged in category  breath  - updated in working file 
