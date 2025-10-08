@@ -11,8 +11,11 @@
 ##**********************************************************************
 
 # Packages
-library(openVA)
-library(nbc4va)
+library(openVA)           # Standard VA suite
+library(nbc4va)           # Naive Bayes VA
+library(mnormt)           # Multivariate normal distribution
+library(SPARRAfairness)   # ROC curves
+library(latex2exp)        # Plotting
 
 # Main functions: to be incorporated in an R package in time
 source("Package_temp/imputeVA/R/simulations.R")
@@ -32,24 +35,53 @@ load("Package_temp/imputeVA/data/cod_subcategories.RData") # Correspondence betw
 nsim=10000 # run with 1500 or 10000
 
 # Degrees of pertubation
-ptb=0.1 # Perturb probbase entries by this much
+ptb=0.2 # Perturb probbase entries by this much (SD)
+
+# Manner of pertubation: uniform or Gaussian
+uniform_pertubation = TRUE
+
+# Deviation to use for approximation of partial derivative
+epsilon = 0.01
 
 # Perturb this many elements
-nptb=200
+nptb=500
+
+# Perturb only elements with high probbase entries or not
+perturb_all=FALSE
 
 # Random seed
 seed=3726152
 set.seed(seed)
 
+# Draw plots every so often while running?
+running_figures=TRUE
+
+# Save plots as PDFs
+save_pdf=TRUE
+
+##**********************************************************************
+##  Load data if already simulated                                  ####
+##**********************************************************************
+
+lx=list.files("../Images/",pattern=paste0("imputation_test_temp_",nsim,"*"),full.names=TRUE)
+n_done=length(lx)
+
+save_file=paste0("../Images/imputation_test_temp_",nsim,"_",1+n_done,".Rdata")
+set.seed(seed + n_done)
+
+save.image(save_file)
+
 ##**********************************************************************
 ##  Learn parameters for simulation                                 ####
 ##**********************************************************************
+
 
 code=RandomPhysician$code1 # Physician coded causes of death
 va=RandomPhysician[,1:246] # VA questionnaire data
 
 # Learn covariance structure from data
 rparam=learn_parameters_from_va(va,code)
+probbase=standard_simulation$probbase
 
 # Set cause-of-death specific covariance matrices.
 V_rp=list()
@@ -80,9 +112,12 @@ probbase_numeric=vax$parameters$probbase_numeric
 prior=vax$parameters$prior
 wf=which(is.finite(probbase_numeric))
 
+
+
 ##**********************************************************************
 ##  Evaluate baseline imputation accuracy (log-loss)                ####
 ##**********************************************************************
+
 
 # With real probbase
 i_real=imputation_accuracy(va,probbase_numeric,prior,blocks)
@@ -91,6 +126,7 @@ i_real=imputation_accuracy(va,probbase_numeric,prior,blocks)
 ##**********************************************************************
 ##  Evaluate imputation accuracy for very perturbed probbases       ####
 ##**********************************************************************
+
 
 # With random probbase
 probbase_rand=probbase_numeric
@@ -118,23 +154,34 @@ i_almost=imputation_accuracy(va,probbase_almost,prior,blocks)
 ##  Test slight probbase pertubation                                ####
 ##**********************************************************************
 
-nsim_perturb=100
-i_test=rep(0,nsim_perturb)
-for (i in 1:length(i_test)) {
+
+is_real= imputation_accuracy(va,probbase_numeric,prior,blocks)
+
+nsim_perturb=100 # Number of simulations
+is_test=rep(0,nsim_perturb)
+for (i in 1:length(is_test)) {
+  set.seed(seed + i)
   probbase_almost=probbase_numeric
-  w2=sample(wf,20)
+  w2=sample(wf,20) # 20 elements perturbed
   probbase_almost[w2]=pmax(pmin(probbase_numeric[w2]+rnorm(w2,sd=0.05),1),0)
-  i_test[i]=imputation_accuracy(va,probbase_almost,prior,blocks)
+  is_test[i]=imputation_accuracy(va,probbase_almost,prior,blocks)
 }
-print(length(which(i_test>i_real)))
 
 
 ##**********************************************************************
 ##  See if perturbed elements can be found                          ####
 ##**********************************************************************
 
+
 # Choose elements to perturb
-wp=which(probbase_numeric>ptb & probbase_numeric<1-ptb)
+if (perturb_all) {
+  wp=1:length(probbase_numeric)
+} else {
+  w1=which(probbase_numeric >= ptb & probbase_numeric <= 1-ptb)
+  pr=outer(rep(1,dim(probbase)[1]),prior); pr[,c(1:16,77:81)]=0
+  w2=which(pr>= 1e-3)
+  wp=intersect(w1,w2)
+}
 test_elements=sample(wp,nptb)
 nontest_elements=setdiff(wp,test_elements)
 
@@ -145,7 +192,11 @@ nontest_elements=sample(nontest_elements)
 # Perturb these elements by +/- ptb (about 0.1)
 probbase_test=probbase_numeric
 orig=probbase_test[test_elements]
-probbase_test[test_elements] = orig+sample(c(ptb,-ptb),length(test_elements),rep=T)
+if (uniform_pertubation) {
+  probbase_test[test_elements] = pmax(pmin(orig+sample(c(ptb,-ptb),length(test_elements),rep=T),1),0) 
+} else {
+  probbase_test[test_elements] = pmax(pmin(orig+rnorm(length(orig),sd=ptb),1),0) 
+}
 
 # Overall imputation accuracy with pertubation
 i_test=imputation_accuracy(va,probbase_test,prior,blocks)
@@ -157,112 +208,99 @@ i_test=imputation_accuracy(va,probbase_test,prior,blocks)
 action_mat_plus=0*probbase_numeric 
 action_mat_minus=0*probbase_numeric 
 action_mat_true=probbase_test-probbase_numeric
+print(range(action_mat_true)) # as a check
+
 for (i in 1:length(test_elements)) {
   oval=probbase_test[test_elements[i]]
   pb_minus=probbase_test; pb_plus=probbase_test
-  pb_plus[test_elements[i]]=pmax(oval+ptb,0)
-  pb_minus[test_elements[i]]=pmax(oval-ptb,0)
+  pb_plus[test_elements[i]]=pmax(oval+epsilon,0)
+  pb_minus[test_elements[i]]=pmax(oval-epsilon,0)
   val_plus=imputation_accuracy(va,pb_plus,prior,blocks)
   val_minus=imputation_accuracy(va,pb_minus,prior,blocks)
-  action_mat_plus[test_elements[i]]=val_plus-i_test
-  action_mat_minus[test_elements[i]]=val_minus-i_test
+  action_mat_plus[test_elements[i]]=(val_plus-i_test)/epsilon
+  action_mat_minus[test_elements[i]]=(val_minus-i_test)/epsilon
   if ((i%%10)==0) {
-    par(mfrow=c(1,2))
-    image(action_mat_plus)
-    image(action_mat_true)
-    save.image(file="imputation_test_temp.RData")
+    if (running_figures) {
+      par(mfrow=c(1,2))
+      image(action_mat_plus)
+      image(action_mat_true)
+    }
+    save.image(file=save_file)
     print(i)
   }
 }
 for (i in 1:length(nontest_elements)) {
   oval=probbase_test[nontest_elements[i]]
   pb_minus=probbase_test; pb_plus=probbase_test
-  pb_plus[nontest_elements[i]]=pmax(oval+ptb,0)
-  pb_minus[nontest_elements[i]]=pmax(oval-ptb,0)
+  pb_plus[nontest_elements[i]]=pmax(oval+epsilon,0)
+  pb_minus[nontest_elements[i]]=pmax(oval-epsilon,0)
   val_plus=imputation_accuracy(va,pb_plus,prior,blocks)
   val_minus=imputation_accuracy(va,pb_minus,prior,blocks)
-  action_mat_plus[nontest_elements[i]]=val_plus-i_test
-  action_mat_minus[nontest_elements[i]]=val_minus-i_test
+  action_mat_plus[nontest_elements[i]]=(val_plus-i_test)/epsilon
+  action_mat_minus[nontest_elements[i]]=(val_minus-i_test)/epsilon
   if ((i%%10)==0) {
-    par(mfrow=c(1,2))
-    image(action_mat_plus)
-    image(action_mat_true)
-    save.image(file="imputation_test_temp.RData")
+    if (running_figures) {
+      par(mfrow=c(1,2))
+      image(action_mat_plus)
+      image(action_mat_true)
+    }
+    save.image(file=save_file)
     print(i)
   }
 }
 
+save.image(file=save_file)
+
+
+
+
+
 ##**********************************************************************
-##  Display results                                                 ####
+##  Test perturbed individual elements                              ####
 ##**********************************************************************
 
-# Predictor
-pred=(action_mat_plus-action_mat_minus)
 
-# Output
-y=(action_mat_true)
+i_test=imputation_accuracy(va,probbase_numeric,prior,blocks)
 
-# ROC curve: differentiation of too high/too low
-pdf(paste0("Figures/roc_",nsim,".pdf"),width=4,height=4)
-yd=y[test_elements]>0; pd=pred[test_elements]
-rocd=getroc(yd,pd)
-plot(rocd,main="ROC for +/- pertubation",addauc=TRUE)
-print(wilcox.test(pd[which(yd==1)],pd[which(yd==0)]))
-dev.off()
+n_ex=20 # Number of samples
+ns=20 # Resolution
+del=0.2 # zoom in this much
 
-# Densities of values
-pdf(paste0("Figures/density_",nsim,".pdf"),width=6,height=4)
-if (nsim>5000) {
-  xr=10;yr=0.03; dr=c(-100,100)
-} else {
-  xr=2; yr=0.17; dr=c(-12,12)
+dat_example=list()
+for (ii in 1:n_ex) {
+  set.seed(seed + ii)
+  
+  s=sample(test_elements,1)
+  sq=seq(0,1,length=ns)
+  ival=rep(0,length(sq))
+  for (i in 1:length(sq)) {
+    pt2=probbase_numeric
+    pt2[s]=sq[i]
+    isub=imputation_accuracy(va,pt2,prior,blocks)
+    ival[i]=isub-i_test
+    print(i)
+  }
+  
+  # Refine
+  s2=sq[which.min(ival)]
+  sq2=seq(pmax(s2-del,0),pmin(s2+del,1),length=ns)
+  ival2=rep(0,length(sq))
+  for (i in 1:length(sq2)) {
+    pt2=probbase_numeric
+    pt2[s]=sq2[i]
+    isub=imputation_accuracy(va,pt2,prior,blocks)
+    ival2[i]=isub-i_test
+    print(i)
+  }
+  
+  sq=c(sq,sq2)
+  ival=c(ival,ival2)
+  ox=order(sq)
+  sq=sq[ox]; ival=ival[ox]
+  
+  dat_example[[ii]]=list(sample=s,test=sq,imp=ival)
+  
 }
-par(mar=c(4,4,2,4))
-d0=density(pred[nontest_elements],from=dr[1],to=dr[2])
-dp=density(pd[which(yd>0)],from=dr[1],to=dr[2])
-dn=density(pd[which(yd==0)],from=dr[1],to=dr[2])
-plot(d0,xlim=dr,main="",xlab=expression(gamma[jl]))
-lines(dp,col="red")
-lines(dn,col="blue")
-dpr=dp$y/dn$y; dnr=1/dpr
-lines(dp$x,dpr*max(d0$y)/max(dpr),col="red",lty=2)
-lines(dp$x,dnr*max(d0$y)/max(dpr),col="blue",lty=2)
-pxx=pretty(seq(0,max(dpr),length=5))
-axis(4,at=seq(min(d0$y),max(d0$y),length=length(pxx)),labels=pxx)
-mtext("Density ratio",4,line=2)
 
-legend(xr,yr,c("Pos.","Neg.","None","Pos/Neg","Neg/Pos"),
-       lty=c(1,1,1,2,2),col=c("red","blue","black","red","blue"),
-       bg="white",bty="n")
-dev.off()
-
-# ROC curve: identification of too high
-roch=getroc(yp[wp]>0,pred[wp])
-plot(rocd,main="ID: high",addauc=TRUE)
-
-# ROC curve: identification of too low
-roch=getroc(yp[wp]>0,pred[wp])
-plot(rocd,main="ID: high",addauc=TRUE)
-
-
-
-# Heatmaps: not very easy to read
-par(mfrow=c(1,2))
-disp_mat=NA*probbase_numeric
-disp_mat[wp]=0
-disp_mat[test_elements]=probbase_numeric[test_elements]-probbase_test[test_elements]
-crange=colorRampPalette(c("blue","gray","red"))(100)
-image(disp_mat[,17:76],xlab="Questions",ylab="CoDs",col=crange,main="Perturbed values")
-#legend("bottomright",c("Too high","Too low","Candidate"),col=c("red","blue","gray"),pch=16)
-
-dval=action_mat_plus-action_mat_minus; nd=length(dval)
-high_thresh=quantile(dval,1-nptb/(2*nd))
-low_thresh=quantile(dval,nptb/(2*nd))
-dec_mat=NA*probbase_numeric
-dec_mat[wp]=0
-dec_mat[which(dval>high_thresh)]=-1
-dec_mat[which(dval<low_thresh)]=1
-
-image(dec_mat[,17:76],xlab="Questions",ylab="CoDs",col=crange,main="Identified values")
-#legend("bottomright",c("Too high","Too low","Candidate"),col=c("red","blue","gray"),pch=16)
+save.image(file=save_file)
 

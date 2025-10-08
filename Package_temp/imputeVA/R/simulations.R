@@ -1,4 +1,5 @@
-load("~/Research/VA/Git/Package_temp/imputeVA/data/standard_simulation.RData")
+## Temporary, while package is not constructed
+load("~/Research/VA/Git/VA_imputation/Package_temp/imputeVA/data/standard_simulation.RData")
 
 
 ##' Simulate a set of VA answers in WHO20112 format consistent with a given 
@@ -89,7 +90,7 @@ simulateVA_WHO2012=function(
   # Establish defaults for missing inputs
   if (any(is.null(probbase),is.null(letterprob),is.null(prior),is.null(V))) {
     # data("standard_simulation")
-    load("~/Research/VA/Git/Package_temp/imputeVA/data/standard_simulation.RData")
+    load("~/Research/VA/Git/VA_imputation/Package_temp/imputeVA/data/standard_simulation.RData")
   }
   if (is.null(probbase)) {
     probbase=standard_simulation$probbase
@@ -130,7 +131,7 @@ simulateVA_WHO2012=function(
   
   # Cause of death (latent)
   clist=colnames(probbase)
-  cod=sample(clist,n,rep=T,prob=prior)
+  cod=sample(clist[17:76],n,rep=T,prob=prior[17:76])
   
   # Remainder
   dat=matrix("",n,dim(probbase)[1])
